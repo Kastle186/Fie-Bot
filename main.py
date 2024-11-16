@@ -10,6 +10,12 @@ import os
 import random
 import statistics
 
+# TODO:
+# - Refactor into auxiliary functions as needed, especially the games and features.
+# - What is Sent1-4?
+# - The "Sent" parts can be written more clearly, I'm almost sure of it.
+# - Manage strings instead of function calls where possible.
+
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')

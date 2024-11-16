@@ -1,5 +1,11 @@
 import random
 
+# TODO:
+# - Capitalize Fie's messages accordingly.
+# - Implement an emotes dictionary for cleaner and more easily maintainable
+#   and extensible code.
+# - Check if match/case works in this use case.
+
 def get_response(user_input: str) -> str:
     lowered: str = user_input.lower()
 
