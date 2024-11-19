@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, time
 from discord import Intents, Client, Message, File
 from dotenv import load_dotenv
+from typing import Final, TypeAlias, Union
+
+from fieutils import emote
 from responses import get_response
-from typing import Final
 
 import asyncio
 import math
@@ -10,32 +12,55 @@ import os
 import random
 import statistics
 
-# TODO:
-# - Refactor into auxiliary functions as needed, especially the games and features.
-# - What is Sent1-4?
-# - The "Sent" parts can be written more clearly, I'm almost sure of it.
-# - Manage strings instead of function calls where possible.
+# STEP -1: Define aliases, data structures, etc that will be used in the main code
+#          here. Might be better to move them to their own file but we'll see about
+#          later on.
+
+DiscordChannelType: TypeAlias = Union[
+    TextChannel,
+    StageChannel,
+    VoiceChannel,
+    Thread,
+    DMChannel,
+    GroupChannel,
+    PartialMessageable
+]
+
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
+
 
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True # NOQA
 client: Client = Client(intents=intents)
 
+
 # STEP 2: MESSAGE FUNCTIONALITY
-async def send_message(message: Message, user_message: str) -> None:
+async def send_message(
+        message_or_channel: Union[Message, DiscordChannelType],
+        user_message: str) -> None:
     if not user_message:
         print('(Message was empty because intents were not enabled probably)')
         return
+
     if is_private := user_message[0] == "?":
         user_message = user_message[1:]
 
     try:
-        response: str = get_response(user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
+        response = get_response(user_message)
+        destination = None
+
+        if type(message_or_channel) is Message:
+            destination = (message_or_channel.author if is_private
+                           else message_or_channel.channel)
+        else:
+            destination = message_or_channel
+
+        await destination.send(response)
+
     except Exception as e:
         print(e)
 
@@ -44,6 +69,7 @@ async def send_message(message: Message, user_message: str) -> None:
 @client.event
 async def on_ready() -> None:
     print(f"{client.user} is now running!")
+
 
 # STEP 4.5: TEST
 sent = False
@@ -73,7 +99,7 @@ async def send_daily_message():
 
         if not sent2:
             if now.hour == SPECIFIC_TIME2.hour and now.minute == SPECIFIC_TIME2.minute:
-                await channel2.send("<@444271831118249996> it's a bit embarassing to hear how much you appreciate me but thanks! i appreciate you too yuuyuu :grin::v:")
+                await channel2.send(f"<@444271831118249996> it's a bit embarassing to hear how much you appreciate me but thanks! i appreciate you too yuuyuu {emote("GRINV")}")
                 sent2 = True
 
         if not sent3:
@@ -88,7 +114,8 @@ async def send_daily_message():
                 await channel.send("<@164047938325184512> <:Fie_Claussell:1304860526936985620> Are you still awake you son of a gun? Don't you have uni tomorrow? Or a life? Get your ass to bed immediately.")
                 sent4 = True
 
-        await asyncio.sleep(60)  # Check every second
+        # Check every minute.
+        await asyncio.sleep(60)
 
 # STEP 4: HANDLING INCOMING MESSAGES
 @client.event
@@ -371,6 +398,7 @@ async def on_message(message: Message) -> None:
         elif new_list[2] == "zemuria":
             await message.channel.send(
                 "Zemuria is the continent made up of 37 regions on which the series takes place. It's the only known continent so far")
+
 
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:

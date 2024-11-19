@@ -1,8 +1,6 @@
 # File: responses.py
 
-from fieutils import emote
-from fieutils import help_msg
-from fieutils import sylphid_greeting
+from fieutils import emote, help_msg, sylphid_greeting
 
 # Fie is constantly watching what everyone says in the server. When certain messages
 # are sent or are included in other messages, she will participate in the conversation.
