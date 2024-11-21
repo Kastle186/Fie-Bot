@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, time
 from discord import Intents, Client, Message, File
 from dotenv import load_dotenv
-from typing import Final, TypeAlias, Union
+from typing import Final
 
-from fieutils import emote
+from fieutils import emote, send_message
 from responses import get_response
 
 import asyncio
@@ -16,15 +16,15 @@ import statistics
 #          here. Might be better to move them to their own file but we'll see about
 #          later on.
 
-DiscordChannelType: TypeAlias = Union[
-    TextChannel,
-    StageChannel,
-    VoiceChannel,
-    Thread,
-    DMChannel,
-    GroupChannel,
-    PartialMessageable
-]
+# DiscordChannelType: TypeAlias = Union[
+#     TextChannel,
+#     StageChannel,
+#     VoiceChannel,
+#     Thread,
+#     DMChannel,
+#     GroupChannel,
+#     PartialMessageable
+# ]
 
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
@@ -38,40 +38,47 @@ intents.message_content = True # NOQA
 client: Client = Client(intents=intents)
 
 
-# STEP 2: MESSAGE FUNCTIONALITY
-async def send_message(
-        message_or_channel: Union[Message, DiscordChannelType],
-        user_message: str) -> None:
-    if not user_message:
-        print('(Message was empty because intents were not enabled probably)')
-        return
-
-    if is_private := user_message[0] == "?":
-        user_message = user_message[1:]
-
-    try:
-        response = get_response(user_message)
-        destination = None
-
-        if type(message_or_channel) is Message:
-            destination = (message_or_channel.author if is_private
-                           else message_or_channel.channel)
-        else:
-            destination = message_or_channel
-
-        await destination.send(response)
-
-    except Exception as e:
-        print(e)
-
-
-# STEP 3: HANDLING THE STARTUP FOR OUR BOT
+# STEP 2: HANDLING THE STARTUP FOR OUR BOT
 @client.event
 async def on_ready() -> None:
     print(f"{client.user} is now running!")
 
 
-# STEP 4.5: TEST
+# async def send_message(
+#         message_or_channel: Union[Message, DiscordChannelType],
+#         user_message: str) -> None:
+#     if not user_message:
+#         print('(Message was empty because intents were not enabled probably)')
+#         return
+
+#     if is_private := user_message[0] == "?":
+#         user_message = user_message[1:]
+
+#     try:
+#         # Defer to Fie to interpret the message and let her decide how she wants
+#         # to respond :)
+#         response = get_response(user_message)
+#         destination = None
+
+#         # Sometimes we might get a Message object, which contains a pointer to the
+#         # channel object where it came from. Other times, we might get the channel
+#         # object directly. So, we have to make that distinction here to call the
+#         # send() method accordingly.
+
+#         if type(message_or_channel) is Message:
+#             destination = (message_or_channel.author if is_private
+#                            else message_or_channel.channel)
+#         elif isinstance(message_or_channel, DiscordChannelType):
+#             destination = message_or_channel
+#         else:
+#             raise TypeError(f"Unrecognized channel type '{type(message_or_channel)}'")
+
+#         await destination.send(response)
+
+#     except Exception as e:
+#         print(e)
+
+
 sent = False
 sent2 = False
 sent3 = False
@@ -117,7 +124,7 @@ async def send_daily_message():
         # Check every minute.
         await asyncio.sleep(60)
 
-# STEP 4: HANDLING INCOMING MESSAGES
+# STEP 3: HANDLING INCOMING MESSAGES
 @client.event
 async def on_message(message: Message) -> None:
     if message.author == client.user:
@@ -128,7 +135,8 @@ async def on_message(message: Message) -> None:
     channel: str = str(message.channel)
 
     print(f"{channel} {username}: {user_message}")
-    await send_message(message, user_message)
+    await handle_message(message)
+    # await send_message(message, user_message)
 
     if message.content.lower() == "claussell":
         choice = random.randint(0, 7)
@@ -400,7 +408,7 @@ async def on_message(message: Message) -> None:
                 "Zemuria is the continent made up of 37 regions on which the series takes place. It's the only known continent so far")
 
 
-# STEP 5: MAIN ENTRY POINT
+# STEP 4: MAIN ENTRY POINT
 def main() -> None:
     client.run(token=TOKEN)
 
