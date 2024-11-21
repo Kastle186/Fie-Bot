@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from typing import Final
 
 from fieutils import emote, send_message
-from responses import get_response
+from fieresponses import get_response
 
 import asyncio
 import math

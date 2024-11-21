@@ -12,7 +12,7 @@ from discord import (
     VoiceChannel
 )
 
-from responses import get_response
+from fieresponses import get_response
 from typing import TypeAlias, Union
 
 import asyncio
