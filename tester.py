@@ -52,16 +52,36 @@
 # print(isinstance(p, a))
 # print(str(FiePoint))
 
-touseforifassigntest = "I will be assigned at condition!"
-
-if ifassigntest := touseforifassigntest[0] == "I":
-    print(f"\nTest was {ifassigntest}!")
-
-if ifassigntest2 := touseforifassigntest[0] == "T":
-    print(f"Test was {ifassigntest}")
-
-print(touseforifassigntest)
-print(ifassigntest)
-print(ifassigntest2)
-
 # raise TypeError("Testing Exceptions!")
+
+# touseforifassigntest = "I will be assigned at condition!"
+
+# if ifassigntest := touseforifassigntest[0] == "I":
+#     print(f"\nTest was {ifassigntest}!")
+
+# if ifassigntest2 := touseforifassigntest[0] == "T":
+#     print(f"Test was {ifassigntest}")
+
+# print(touseforifassigntest)
+# print(ifassigntest)
+# print(ifassigntest2)
+
+def f1(arg1: int, arg2: str) -> None:
+    print(f"I got the args '{arg1}' & '{arg2}'!")
+
+fdict = { "fkey": f1 }
+
+testthere = fdict.get("fkey", None)
+testnotthere = fdict.get("gkey", None)
+
+if testthere is not None:
+    print("FKey had a function!")
+    testthere(1, "string")
+else:
+    print("FKey did not have a function!")
+
+if testnotthere is not None:
+    print("GKey had a function!")
+    testnotthere(2, "string2")
+else:
+    print("GKey did not have a function!")

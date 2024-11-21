@@ -56,6 +56,19 @@ fiehelp = ("'fie rps' -> Play rock/paper/scissors with yours truly\n"
            "'fie how many days until day-month-year' -> Days left until a date you want to calculate\n"
            "'fie hangman' -> Come guess random Trails words!")
 
+# List of Fie images! We seriously are obsessed.
+
+fie_image_files = [
+    "fie.png",
+    "Fie_Claussell_SD_29.png",
+    "Rean x fie.png",
+    "stylish fie.png",
+    "cute fie.png",
+    "fie bye bye.png",
+    "fie (and laura).png",
+    "ValentineKuro.png"
+]
+
 DiscordChannelType: TypeAlias = Union[
     DMChannel,
     GroupChannel,
@@ -103,6 +116,16 @@ async def handle_message(message_obj: Message) -> None:
     if not fie_response == "<empty>":
         await send_text(message_obj, fie_response, is_private)
         return
+
+    if message == "claussell":
+        img_to_send = random.choice(fie_image_files)
+        await send_file(message_obj, img_to_send, is_private)
+
+    elif message == "kastle":
+        await send_file(message_obj, "Noel.png", is_private)
+
+    elif message == "kayrennede007":
+        await send_file(message_obj, "HOT-SHOT_-_Renne_Kuro.png", is_private)
 
 
 # ******************************************************************************** #
