@@ -138,53 +138,6 @@ async def on_message(message: Message) -> None:
     await handle_message(message)
     # await send_message(message, user_message)
 
-    if message.content.lower() == "claussell":
-        choice = random.randint(0, 7)
-        if choice == 0:
-            await message.channel.send(file=File('fie.png'))
-        elif choice == 1:
-            await message.channel.send(file=File('Fie_Claussell_SD_29.png'))
-        elif choice == 2:
-            await message.channel.send(file=File('Rean x fie.png'))
-        elif choice == 3:
-            await message.channel.send(file=File('stylish fie.png'))
-        elif choice == 4:
-            await message.channel.send(file=File('cute fie.png'))
-        elif choice == 5:
-            await message.channel.send(file=File('fie bye bye.png'))
-        elif choice == 6:
-            await message.channel.send(file=File('fie (and laura).png'))
-        elif choice == 7:
-            await message.channel.send(file=File('ValentineKuro.png'))
-
-    if message.content.lower() == "kayrennede007":
-        await message.channel.send(file=File('HOT-SHOT_-_Renne_Kuro.png'))
-
-    if message.content.lower() == "kastle":
-        await message.channel.send(file=File("Noel.png"))
-
-    if any(word in message.content.lower() for word in ['fie time']):
-        now = datetime.now()
-        west_coast = now - timedelta(hours=7)
-        east_coast = now - timedelta(hours=4)
-        australia = now + timedelta(hours=9)
-        costa_rica = now - timedelta(hours=5)
-        egypt = now + timedelta(hours=3)
-        kuwait = now + timedelta(hours=4)
-        uk = now + timedelta(hours=1)
-
-        if message.channel.id == 420709830622183434 or message.channel.id == 420706417721475082:
-            await message.channel.send('Costa Rica (UTC-6): ' + costa_rica.strftime("%H:%M:%S\n") +
-                                       'Azores (UTC-1): ' + now.strftime("%H:%M:%S\n") +
-                                       'Egypt (UTC+2): ' + egypt.strftime("%H:%M:%S\n") +
-                                       'Kuwait (UTC+3): ' + kuwait.strftime("%H:%M:%S\n"))
-        else:
-            await message.channel.send('U.S. West Coast (UTC-8): ' + west_coast.strftime("%H:%M:%S\n") +
-                                       'U.S. East Coast (UTC-5): ' + east_coast.strftime("%H:%M:%S\n") +
-                                       'Azores (UTC-1): ' + now.strftime("%H:%M:%S\n") +
-                                       'UK (UTC): ' + uk.strftime("%H:%M:%S\n") +
-                                       'Western Australia (UTC+8): ' + australia.strftime("%H:%M:%S\n"))
-
     if any(word in message.content.lower() for word in ['fie rps']):
         """
         Rock Paper Scissors with any round number
@@ -262,43 +215,6 @@ async def on_message(message: Message) -> None:
 
     if len(last_messages) == 2 and last_messages[0][0] == last_messages[1][0] and last_messages[0][1] != last_messages[1][1]:
         await message.channel.send(last_messages[1][0])
-
-    if any(word in message.content.lower() for word in ['fie solve']):
-        """
-        I LOVE MATH
-        """
-        new_list = [word for sentence in [message.content.lower()] for word in sentence.split()]
-        print(new_list)
-
-        if new_list[3] == "+":
-            operation = int(new_list[2]) + int(new_list[4])
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[3] == "-":
-            operation = int(new_list[2]) - int(new_list[4])
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[3] == "*":
-            operation = int(new_list[2]) * int(new_list[4])
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[3] == "/":
-            operation = int(new_list[2]) / int(new_list[4])
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[3] == "^":
-            operation = int(new_list[2]) ** int(new_list[4])
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[2] == "sqrt":
-            operation = math.sqrt(int(new_list[3]))
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[3] == "!":
-            operation = math.factorial(int(new_list[2]))
-            await message.channel.send(f" The result is {operation}!")
-        elif new_list[2] == "mean" or new_list[2] == "average":
-            numbers = []
-            for i in range(3, len(new_list)-1):
-                numbers.append(int(new_list[i]))
-            operation = statistics.mean(numbers)
-            await message.channel.send(f" The result is {operation}!")
-        elif len(new_list) > 5:
-            await message.channel.send("Hey, my brain can only do so much at once! Give me a break :slight_frown:")
 
     if any(word in message.content.lower() for word in ['fie how many days until']):
         """

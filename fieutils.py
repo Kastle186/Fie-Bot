@@ -12,13 +12,13 @@ from discord import (
     VoiceChannel
 )
 
+from datetime import datetime
 from fieresponses import get_response
 from typing import TypeAlias, Union
 
 import asyncio
+import fiecommands
 import random
-
-# NOTE: Don't forget to restore the greeting and help commands.
 
 # Emotes dictionary! The purpose of this is to make the code that implements
 # emotes easier to maintain, extend, and overall easier to type. Use the
@@ -115,17 +115,54 @@ async def handle_message(message_obj: Message) -> None:
     # We got one of the responses from Fie! So we send it to the server as is.
     if not fie_response == "<empty>":
         await send_text(message_obj, fie_response, is_private)
-        return
+
+    # #################################### #
+    # Commands triggered by one word only. #
+    # #################################### #
 
     if message == "claussell":
         img_to_send = random.choice(fie_image_files)
         await send_file(message_obj, img_to_send, is_private)
 
-    elif message == "kastle":
+    if message == "kastle":
         await send_file(message_obj, "Noel.png", is_private)
 
-    elif message == "kayrennede007":
+    if message == "kayrennede007":
         await send_file(message_obj, "HOT-SHOT_-_Renne_Kuro.png", is_private)
+
+    # ###################################################### #
+    # Commands triggered by a phrase in a message: Utilities #
+    # ###################################################### #
+
+    if message in "fie time":
+        timezones_str = fiecommands.fie_time(message_obj.channel.id)
+        await send_text(message_obj, timezones_str, is_private)
+
+    if message in "fie solve":
+        print("Under construction!")
+
+    if message in "fie how many days until":
+        print("Under construction!")
+
+    if message in "fie schedule":
+        print("Under construction!")
+
+    if message in "fie what's":
+        print("Under construction!")
+
+    # ################################################## #
+    # Commands triggered by a phrase in a message: Games #
+    # ################################################## #
+
+    if message in "fie rps":
+        print("Under construction!")
+
+    if message in "fie hangman":
+        print("Under construction!")
+
+    # ############################### #
+    # The rest of message processing! #
+    # ############################### #
 
 
 # ******************************************************************************** #
@@ -176,3 +213,12 @@ async def send_message(
 
     except Exception as e:
         print(e)
+
+
+# *********************************************************************** #
+# OTHER UTILITIES:                                                        #
+# Any other helper functions that are not part of Fie-Bot per se go here! #
+# *********************************************************************** #
+
+def datetime_to_casual(input_dt: datetime) -> str:
+    return input_dt.strftime("%H:%M:%S")
