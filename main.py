@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta, time
 from discord import Intents, Client, Message, File
 from dotenv import load_dotenv
+from fieutils import handle_message
 from typing import Final
-
-from fieutils import emote, send_message
-from fieresponses import get_response
 
 import asyncio
 import math
@@ -42,41 +40,6 @@ client: Client = Client(intents=intents)
 @client.event
 async def on_ready() -> None:
     print(f"{client.user} is now running!")
-
-
-# async def send_message(
-#         message_or_channel: Union[Message, DiscordChannelType],
-#         user_message: str) -> None:
-#     if not user_message:
-#         print('(Message was empty because intents were not enabled probably)')
-#         return
-
-#     if is_private := user_message[0] == "?":
-#         user_message = user_message[1:]
-
-#     try:
-#         # Defer to Fie to interpret the message and let her decide how she wants
-#         # to respond :)
-#         response = get_response(user_message)
-#         destination = None
-
-#         # Sometimes we might get a Message object, which contains a pointer to the
-#         # channel object where it came from. Other times, we might get the channel
-#         # object directly. So, we have to make that distinction here to call the
-#         # send() method accordingly.
-
-#         if type(message_or_channel) is Message:
-#             destination = (message_or_channel.author if is_private
-#                            else message_or_channel.channel)
-#         elif isinstance(message_or_channel, DiscordChannelType):
-#             destination = message_or_channel
-#         else:
-#             raise TypeError(f"Unrecognized channel type '{type(message_or_channel)}'")
-
-#         await destination.send(response)
-
-#     except Exception as e:
-#         print(e)
 
 
 sent = False
@@ -136,7 +99,6 @@ async def on_message(message: Message) -> None:
 
     print(f"{channel} {username}: {user_message}")
     await handle_message(message)
-    # await send_message(message, user_message)
 
     if any(word in message.content.lower() for word in ['fie rps']):
         """

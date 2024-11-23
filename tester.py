@@ -1,92 +1,103 @@
 # File.py
 
-# from fieutils import emote, help_msg, sylphid_greeting
 from datetime import datetime, timedelta, UTC
 from typing import TypeAlias, Union, get_args
 
-# print(f"Emote: {emote("BLUSHV")}")
-# print(emote("NOT HERE"))
-# print(sylphid_greeting())
-# print(f"\n{help_msg()}")
+import fiecommands as cmds
 
-# lowered = "Oh yes hi Fie!".lower()
+lowered = "Oh yes hi Fie!".casefold()
+print(f"{cmds.fie_response(lowered)}\n")
+print(f"{cmds.fie_response("fie")}\n")
+print(f"{cmds.fie_response("fie help")}\n")
 
-# if any(msg in lowered for msg in
-#        ["hi fie",
-#         "hey fie"]):
-#     print(f"\nHey what's up {emote("WAVE")}\n")
+test_id1 = 420709830622183434
+test_id2 = 999
 
-TestAliasType = Union[
-    int,
-    str,
-    list
+print(f"{cmds.fie_time(test_id1)}\n")
+print(f"{cmds.fie_time(test_id2)}\n")
+
+op_tests = [
+    "fie solve sqrt 121",
+    "fie solve average 5 7 9 11",
+    "fie solve 3 * 5",
+    "fie solve 4 +",
+    "fie solve 9 + 3 + 7"
 ]
 
-print(TestAliasType)
-x = 1
-l = "test"
-p = [2.3, 3.5]
+for test in op_tests:
+    print(f"{cmds.fie_solve(test)}\n")
 
-xtype = type(x)
-ltype = type(l)
-ptype = type(p)
+# TestAliasType = Union[
+#     int,
+#     str,
+#     list
+# ]
 
-print(xtype is int)
-print(ltype)
-print(ptype)
+# print(TestAliasType)
+# x = 1
+# l = "test"
+# p = [2.3, 3.5]
 
-names = list(map(lambda x: x.__name__, list(TestAliasType.__args__)))
-print(names)
-print(TestAliasType)
-print(isinstance(p, TestAliasType))
+# xtype = type(x)
+# ltype = type(l)
+# ptype = type(p)
 
-class FiePoint:
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+# print(xtype is int)
+# print(ltype)
+# print(ptype)
 
-a: TypeAlias = Union[int, str, FiePoint]
-b = FiePoint(1, 2, 3)
+# names = list(map(lambda x: x.__name__, list(TestAliasType.__args__)))
+# print(names)
+# print(TestAliasType)
+# print(isinstance(p, TestAliasType))
 
-print(f"\n{isinstance(b, a)}")
-print(isinstance(p, a))
-print(str(FiePoint))
+# class FiePoint:
+#     def __init__(self, x, y, z):
+#         self.x = x
+#         self.y = y
+#         self.z = z
 
-# raise TypeError("Testing Exceptions!")
+# a: TypeAlias = Union[int, str, FiePoint]
+# b = FiePoint(1, 2, 3)
 
-touseforifassigntest = "I will be assigned at condition!"
+# print(f"\n{isinstance(b, a)}")
+# print(isinstance(p, a))
+# print(str(FiePoint))
 
-if ifassigntest := touseforifassigntest[0] == "I":
-    print(f"\nTest was {ifassigntest}!")
+# # raise TypeError("Testing Exceptions!")
 
-if ifassigntest2 := touseforifassigntest[0] == "T":
-    print(f"Test was {ifassigntest}")
+# touseforifassigntest = "I will be assigned at condition!"
 
-print(touseforifassigntest)
-print(ifassigntest)
-print(ifassigntest2)
+# if ifassigntest := touseforifassigntest[0] == "I":
+#     print(f"\nTest was {ifassigntest}!")
 
-def f1(arg1: int, arg2: str) -> None:
-    print(f"I got the args '{arg1}' & '{arg2}'!")
+# if ifassigntest2 := touseforifassigntest[0] == "T":
+#     print(f"Test was {ifassigntest}")
 
-fdict = { "fkey": f1 }
+# print(touseforifassigntest)
+# print(ifassigntest)
+# print(ifassigntest2)
 
-testthere = fdict.get("fkey", None)
-testnotthere = fdict.get("gkey", None)
+# def f1(arg1: int, arg2: str) -> None:
+#     print(f"I got the args '{arg1}' & '{arg2}'!")
 
-if testthere is not None:
-    print("FKey had a function!")
-    testthere(1, "string")
-else:
-    print("FKey did not have a function!")
+# fdict = { "fkey": f1 }
 
-if testnotthere is not None:
-    print("GKey had a function!")
-    testnotthere(2, "string2")
-else:
-    print("GKey did not have a function!")
+# testthere = fdict.get("fkey", None)
+# testnotthere = fdict.get("gkey", None)
 
-print(datetime.now())
-print(datetime.now(UTC))
-print((datetime.now() + timedelta(hours=3)).strftime("%H:%M:%S"))
+# if testthere is not None:
+#     print("FKey had a function!")
+#     testthere(1, "string")
+# else:
+#     print("FKey did not have a function!")
+
+# if testnotthere is not None:
+#     print("GKey had a function!")
+#     testnotthere(2, "string2")
+# else:
+#     print("GKey did not have a function!")
+
+# print(datetime.now())
+# print(datetime.now(UTC))
+# print((datetime.now() + timedelta(hours=3)).strftime("%H:%M:%S"))

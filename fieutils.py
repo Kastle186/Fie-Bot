@@ -11,9 +11,6 @@ from discord import (
     Thread,
     VoiceChannel
 )
-
-from datetime import datetime
-from fieresponses import get_response
 from typing import TypeAlias, Union
 
 import asyncio
@@ -110,11 +107,11 @@ async def handle_message(message_obj: Message) -> None:
         user_message = user_message[1:]
 
     message = user_message.casefold()
-    fie_response = get_response(message)
+    fie_res = fiecommands.fie_response(message)
 
     # We got one of the responses from Fie! So we send it to the server as is.
-    if not fie_response == "<empty>":
-        await send_text(message_obj, fie_response, is_private)
+    if not fie_res == "<empty>":
+        await send_text(message_obj, fie_res, is_private)
 
     # #################################### #
     # Commands triggered by one word only. #
@@ -139,7 +136,8 @@ async def handle_message(message_obj: Message) -> None:
         await send_text(message_obj, timezones_str, is_private)
 
     if message in "fie solve":
-        print("Under construction!")
+        math_result = fiecommands.fie_solve(message)
+        await send_text(message_obj, math_result, is_private)
 
     if message in "fie how many days until":
         print("Under construction!")
@@ -214,11 +212,3 @@ async def send_message(
     except Exception as e:
         print(e)
 
-
-# *********************************************************************** #
-# OTHER UTILITIES:                                                        #
-# Any other helper functions that are not part of Fie-Bot per se go here! #
-# *********************************************************************** #
-
-def datetime_to_casual(input_dt: datetime) -> str:
-    return input_dt.strftime("%H:%M:%S")
