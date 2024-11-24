@@ -131,7 +131,7 @@ def fie_solve(operation: str) -> str:
             return f"Hey dummy, your operation '{" ".join(tokens)}' is malformed."
 
         if len(tokens) > 3:
-            return "Hey, my brain can only do so much at once! Give me a break :slight_frown:"
+            return f"Hey, my brain can only do so much at once! Give me a break {emote("FROWN")}"
 
         # Cases starting with an operand.
         match tokens[1]:
