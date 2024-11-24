@@ -145,22 +145,77 @@ def fie_solve(operation: str) -> str:
     return f"The result is {result}!"
 
 
-def fie_days_until():
-    pass
+def fie_days_until(target_day_msg: str) -> str:
+    today = datetime.now()
+    tokens = target_day_msg.split()[5:]
+    days_until_msg = ""
+
+    # A specific date was given, so calculate how long until or how long has passed
+    # since said date.
+    if len(tokens) > 0:
+        target = datetime.strptime(tokens[0], "%d-%m-%Y")
+        delta = target - today
+
+        days_until_msg = \
+            ({True: f"There are {delta.days + 1} days until {target}",
+              False: f"{delta.days * (-1) + 1} days have passed since {target}"}) \
+              [delta.days >= 0]
+
+    # No specific date given, so Fie will show the days until or after some
+    # important dates.
+    else:
+        christmas = datetime(today.year, 12, 25)
+        christmas_msg = "Days until Christmas"
+
+        # If Christmas has already passed this year, then Fie will tell how many
+        # days left until next year's Christmas.
+        until_christmas = \
+            ({True: (christmas - today).days,
+              False: (datetime(today.year + 1, 12, 25) - today).days}) \
+              [christmas > today]
+
+        daybreak2 = datetime(2025, 2, 14)
+        until_daybreak2 = (daybreak2 - today).days
+
+        daybreak2_msg = ({True: "Days until Daybreak II",
+                          False: "Days since Daybreak II's launch"}) \
+                          [daybreak2 > today]
+
+        days_until_msg = (f"{christmas_msg}: {until_christmas}\n"
+                          f"{daybreak2_msg}: {until_daybreak2}\n"
+                          f"Days until Rean stops being dense: ∞")
+    return days_until_msg
 
 
-def fie_schedule():
-    pass
+def fie_what_is(question_msg: str) -> str:
+    tokens = question_msg.split()[2:]
+    fun_fact = ""
 
+    if len(tokens) == 0:
+        return "What's what?"
 
-def fie_what_is():
-    pass
+    match tokens[0]:
+        case "zemuria":
+            fun_fact = ("Zemuria is the continent made up of 37 regions on which the"
+                        " series takes place. It's the only known continent so far.")
 
+        case "zemurian" if (len(tokens) > 1 and tokens[1] == "ore"):
+            fun_fact = ("Zemurian Ore is an extremely rare material found in Zemuria."
+                        " It's usually used in the series to craft very strong weapons!")
 
-# *********************************************************************** #
-# OTHER COMMAND UTILITIES:                                                #
-# Any other helper functions for the commands go here!                    #
-# *********************************************************************** #
+        case "zemurian":
+            fun_fact = ("Zemurian is how the inhabitants and otherwise belonging beings"
+                        " to the continent of Zemuria are known as.")
+
+        case _:
+            fun_fact = "Mmm... I will have to research that and get back to you later."
+
+    return fun_fact
+
+# **************************************************** #
+# OTHER COMMAND UTILITIES:                             #
+# Any other helper functions for the commands go here! #
+# **************************************************** #
 
 def datetime_to_casual(input_dt: datetime) -> str:
     return input_dt.strftime("%H:%M:%S")

@@ -178,28 +178,6 @@ async def on_message(message: Message) -> None:
     if len(last_messages) == 2 and last_messages[0][0] == last_messages[1][0] and last_messages[0][1] != last_messages[1][1]:
         await message.channel.send(last_messages[1][0])
 
-    if any(word in message.content.lower() for word in ['fie how many days until']):
-        """
-        Count your days!
-        """
-        today = datetime.today()
-        new_list = [word for sentence in [message.content.lower()] for word in sentence.split()]
-        if len(new_list) > 5:
-            target = datetime.strptime(new_list[5], "%d-%m-%Y")
-            delta = target - today
-            if delta.days >= 0:
-                await message.channel.send(f"There are {delta.days + 1} days until {target}")
-            else:
-                await message.channel.send(f"{delta.days * (-1) + 1} days have passed since {target}")
-        else:
-            target = datetime.strptime("25-12-2024", "%d-%m-%Y")
-            target2 = datetime.strptime("14-02-2025", "%d-%m-%Y")
-            delta = target - today
-            delta2 = target2 - today
-            await message.channel.send(f"Days until Christmas: {delta.days + 1}\n"
-                                       f"Days until Daybreak II: {delta2.days + 1}\n"
-                                       f"Days until Rean stops being dense: ∞\n")
-
     if any(word in message.content.lower() for word in ['fie schedule']) :
         tasks = [
             "20th of November - PCO (RP)",
@@ -273,17 +251,6 @@ async def on_message(message: Message) -> None:
             else:
                 await message.channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
                 lives -= 1
-
-
-    if any(word in message.content.lower() for word in ["fie what's"]):
-        new_list = [word for sentence in [message.content.lower()] for word in sentence.split()]
-        if new_list[2] == "zemurian" and new_list[3] == "ore":
-            await message.channel.send("Zemurian Ore is an extremely rare material found in Zemuria. It's usually used in the series to craft very strong weapons!\n")
-        elif new_list[2] == "zemuria":
-            await message.channel.send("Zemuria is the continent made up of 37 regions on which the series takes place. It's the only known continent so far")
-        elif new_list[2] == "zemuria":
-            await message.channel.send(
-                "Zemuria is the continent made up of 37 regions on which the series takes place. It's the only known continent so far")
 
 
 # STEP 4: MAIN ENTRY POINT
