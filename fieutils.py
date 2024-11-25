@@ -17,24 +17,6 @@ import asyncio
 import fiecommands
 import random
 
-# Emotes dictionary! The purpose of this is to make the code that implements
-# emotes easier to maintain, extend, and overall easier to type. Use the
-# getter function `emote()` to use them in your code.
-#
-# Have any new combination of emotes you want to use? Just add a new entry here!
-
-fieemotes = {
-    "BLUSHV": ":blush::v:",
-    "FROWN": ":slight_frown:",
-    "GRINV": ":grin::v:",
-    "PENSIVE": ":pensive:",
-    "RELAXED": ":relaxed:",
-    "SALUTE": ":saluting_face:",
-    "SLEEP": ":sleeping_face:",
-    "TRIUMPH": ":triumph:",
-    "WAVE": ":wave:"
-}
-
 # List of greetings Fie can use with the 'fie' command.
 
 fiegreetings = [
@@ -78,14 +60,8 @@ DiscordChannelType: TypeAlias = Union[
     VoiceChannel
 ]
 
-
-def emote(emote_name: str) -> str:
-    return fieemotes.get(emote_name, "???")
-
-
 def sylphid_greeting() -> str:
     return random.choice(fiegreetings)
-
 
 def help_msg():
     return f"What a pain... here are the commands you can use:\n{fiehelp}"

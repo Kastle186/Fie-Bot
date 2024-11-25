@@ -10,20 +10,6 @@ import os
 import random
 import statistics
 
-# STEP -1: Define aliases, data structures, etc that will be used in the main code
-#          here. Might be better to move them to their own file but we'll see about
-#          later on.
-
-# DiscordChannelType: TypeAlias = Union[
-#     TextChannel,
-#     StageChannel,
-#     VoiceChannel,
-#     Thread,
-#     DMChannel,
-#     GroupChannel,
-#     PartialMessageable
-# ]
-
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()

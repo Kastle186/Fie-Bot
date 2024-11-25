@@ -1,7 +1,8 @@
 # File: fiecommands.py
 
 from datetime import datetime, timedelta, UTC
-from fieutils import emote, help_msg, sylphid_greeting
+from fieemotes import emote
+from fieutils import help_msg, sylphid_greeting
 
 import math
 import statistics
