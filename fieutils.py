@@ -1,6 +1,7 @@
 # File: fieutils.py
 
 from discord import (
+    Client,
     DMChannel,
     File,
     GroupChannel,
@@ -15,6 +16,7 @@ from typing import TypeAlias, Union
 
 import asyncio
 import fiecommands
+import fiegames
 import random
 
 # List of greetings Fie can use with the 'fie' command.
@@ -74,7 +76,7 @@ def help_msg():
 # looking here.                                                                   #
 # ******************************************************************************* #
 
-async def handle_message(message_obj: Message) -> None:
+async def handle_message(client_obj: Client, message_obj: Message) -> None:
     user_message = message_obj.content
 
     if not user_message:
@@ -134,7 +136,7 @@ async def handle_message(message_obj: Message) -> None:
     # ################################################## #
 
     if message in "fie rps":
-        print("Under construction!")
+        await fiegames.fie_rps(client_obj, message_obj)
 
     if message in "fie hangman":
         print("Under construction!")

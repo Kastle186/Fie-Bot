@@ -84,7 +84,7 @@ async def on_message(message: Message) -> None:
     channel: str = str(message.channel)
 
     print(f"{channel} {username}: {user_message}")
-    await handle_message(message)
+    await handle_message(client, message)
 
     if any(word in message.content.lower() for word in ['fie rps']):
         """
