@@ -8,6 +8,18 @@ import random
 
 rps_choices = ['rock', 'paper', 'scissors']
 
+trails_words = [
+    "agate", "albarea", "alisa", "altina", "arcus", "arkride", "arseid", "arts",
+    "ash", "bannings", "bright", "calvard", "capua", "cassius", "claussell", "claire",
+    "crafts", "crossbell", "crow", "elie", "elise", "elliot", "emma", "erebonia",
+    "estelle", "eugent", "fie", "fran", "gaius", "guild", "guy", "heiyue", "joshua",
+    "josette", "juna", "jusis", "kea", "kloe", "kurt", "laura", "lechter", "liberl",
+    "lloyd", "machias", "macdowell", "millium", "mueller", "musse", "noel", "olivert",
+    "orbment", "orlando", "osborne", "ouroboros", "plato", "randy", "rean", "reinford",
+    "remiferia", "renne", "rixia", "rufus", "sara", "schwarzer", "seeker", "tio",
+    "tita", "toval", "towa", "valimar", "van", "vander", "zin"
+]
+
 # ****************************************************************************** #
 # FIE MINI-GAMES:                                                                #
 #                                                                                #
@@ -105,6 +117,18 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
             await src_channel.send(f"Damn... I lost the series {emote("PENSIVE")}")
         else:
             await src_channel.send(f"I won the series! {emote("GRINV")}")
+
+
+async def fie_hangman(client_obj: Client, message_obj: Message):
+    src_channel = message_obj.channel
+    await src_channel.send(
+        "Try to guess the trails related word! It can be people, terms, or countries!")
+
+    # IDEA: Might be cool to keep track of the frequency of the words outside of
+    #       this code. So that we can have a better chance of getting them all
+    #       in the game :)
+
+    word = random.choice(trails_words)
 
 
 # *************************************************************************** #
