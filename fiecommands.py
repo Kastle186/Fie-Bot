@@ -213,6 +213,7 @@ def fie_what_is(question_msg: str) -> str:
 
     return fun_fact
 
+
 # **************************************************** #
 # OTHER COMMAND UTILITIES:                             #
 # Any other helper functions for the commands go here! #

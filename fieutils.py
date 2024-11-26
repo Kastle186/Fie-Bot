@@ -123,9 +123,6 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         days_until = fiecommands.fie_days_until(message)
         await send_text(message_obj, days_until, is_private)
 
-    if message in "fie schedule":
-        print("Under construction!")
-
     # TODO: Add the option to also recognize 'fie what is' as the command.
     if message in "fie what's":
         fun_fact = fiecommands.fie_what_is(message)
@@ -139,7 +136,31 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         await fiegames.fie_rps(client_obj, message_obj)
 
     if message in "fie hangman":
-        print("Under construction!")
+        await fiegames.fie_hangman(client_obj, message_obj)
+
+    # ################################### #
+    # Demi's own command for his schedule #
+    # ################################### #
+
+    if message == "fie schedule":
+        tasks = [
+            "20th of November - PCO (RP)",
+            "25th of November - SO (Intermediate)",
+            "27th of November - SI (TA3)",
+            "27th of November - PCO (2nd Delivery)"
+            "2nd of December - IPM (Test)",
+            "4th of December - SO (Test)",
+            "9th of December - SO (project due date)",
+            "9th of December - PCO (forum)",
+            "12th of December - SI (Test)",
+            "13th of December - SI (TP)",
+            "18th of December - PCO (Test)",
+            "16th/19th of December - SI (presentation)"
+        ]
+
+        user = await client_obj.fetch_user(164047938325184512)
+        await user.send('\n'.join(tasks))
+        await send_text(message_obj, "sent!", is_private)
 
     # ############################### #
     # The rest of message processing! #

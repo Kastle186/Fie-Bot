@@ -99,25 +99,6 @@ async def on_message(message: Message) -> None:
     if len(last_messages) == 2 and last_messages[0][0] == last_messages[1][0] and last_messages[0][1] != last_messages[1][1]:
         await message.channel.send(last_messages[1][0])
 
-    if any(word in message.content.lower() for word in ['fie schedule']) :
-        tasks = [
-            "20th of November - PCO (RP)",
-            "25th of November - SO (Intermediate)",
-            "27th of November - SI (TA3)",
-            "27th of November - PCO (2nd Delivery)"
-            "2nd of December - IPM (Test)",
-            "4th of December - SO (Test)",
-            "9th of December - SO (project due date)",
-            "9th of December - PCO (forum)",
-            "12th of December - SI (Test)",
-            "13th of December - SI (TP)",
-            "18th of December - PCO (Test)",
-            "16th/19th of December - SI (presentation)"
-        ]
-        user = await client.fetch_user(164047938325184512)
-        await user.send('\n'.join(tasks))
-        await message.channel.send("sent!")
-
 
 # STEP 4: MAIN ENTRY POINT
 def main() -> None:
