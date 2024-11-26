@@ -118,61 +118,6 @@ async def on_message(message: Message) -> None:
         await user.send('\n'.join(tasks))
         await message.channel.send("sent!")
 
-    if any(word in message.content.lower() for word in ['fie hangman']):
-        words = ["arcus", "claussell", "laura", "renne", "ouroboros", "crafts", "arts", "toval", "arseid",
-                 "arseid", "vander", "juna", "kurt", "altina", "orbments", "rean", "schwarzer", "alisa", "emma",
-                 "reinford", "fie", "gaius", "bright", "estelle", "joshua", "lloyd", "bannings", "cassius",
-                 "jusis", "machias", "millium", "crow", "osborne", "sara", "claire", "tio", "randy", "tita",
-                 "kea", "elie", "agate", "towa", "noel", "rixia", "heiyue", "guy", "guild", "erebonia", "crossbell",
-                 "liberl", "calvard", "remiferia", "olivert", "zin", "mueller", "kloe", "valimar", "lechter",
-                 "rufus", "albarea", "elliot", "ash", "musse", "josette", "capua", "elise", "eugent"]
-
-        await message.channel.send("Try to guess the trails related word! It can be people, terms, or countries!")
-        word = random.randint(0, 66)
-        chosen = words[word]
-        list_chosen = []
-        user_guessed = ["  "] * len(chosen)
-        for i in chosen:
-            list_chosen.append(i)
-
-        lives = 3 * len(list_chosen)
-
-        def check_choice(m):
-            return m.author == message.author and m.channel == message.channel
-
-        while True:
-            correctly_guessed = False
-            if lives == 0:
-                await message.channel.send(f"You lost! The correct word was {chosen}")
-                break
-            await message.channel.send(f"{user_guessed}")
-            await message.channel.send(f"Guess a letter/the word!\nLives: {lives}")
-            try:
-                user_choice = await client.wait_for('message', check=check_choice, timeout=120.0)
-            except asyncio.TimeoutError:
-                await message.channel.send("You took too long to respond! I'm going to sleep :sleeping:")
-                return
-
-            user_list = []
-            for i in user_choice.content.lower():
-                user_list.append(i)
-                print(user_list)
-            if user_choice.content.lower() == chosen or user_guessed == list_chosen:
-                await message.channel.send(f"That's right! The correct answer is {chosen}!")
-                break
-            elif len(user_list) == 1:
-                for position, letter in enumerate(list_chosen):
-                    if letter == user_list[0]:
-                        user_guessed[position] = user_list[0]
-                        correctly_guessed = True
-
-                if not correctly_guessed:
-                    lives -= 1
-
-            else:
-                await message.channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
-                lives -= 1
-
 
 # STEP 4: MAIN ENTRY POINT
 def main() -> None:

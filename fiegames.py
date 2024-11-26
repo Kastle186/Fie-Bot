@@ -1,6 +1,6 @@
 # File: fiegames.py
 
-from discord import Message
+from discord import Client, Message
 from fieemotes import emote
 
 import asyncio
@@ -129,6 +129,70 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
     #       in the game :)
 
     word = random.choice(trails_words)
+    lives = 2 * len(word)
+    has_guessed = False
+
+    # List where we keep track of the player's correct guesses so far.
+    player_guesses = [''] * len(word)
+
+    def check_for_guess(m):
+        return m.author == message_obj.author and m.channel == message_obj.channel
+
+    while not has_guessed:
+        if lives == 0:
+            await src_channel.send(f"You lost! The correct word was '{word}'.")
+            break
+
+        await src_channel.send(str(player_guesses))
+        await src_channel.send(f"Guess a letter/the word!\nLives: {lives}")
+
+        try:
+            next_guess_msg = await client_obj.wait_for(
+                'message',
+                check=check_for_guess,
+                timeout=120.0)
+
+        except asyncio.TimeoutError:
+            await src_channel.send(
+                f"You took too long to respond! I'm going to sleep {emote("SLEEP")}")
+            return
+
+        next_guess = next_guess_msg.content.casefold()
+        print(next_guess)
+
+        # We received a letter as a guess. So, check whether it matches one of more
+        # of the missing letters of the word.
+        if len(next_guess) == 1:
+            letter_matches = [i for i, char in enumerate(word) if char == next_guess]
+
+            if len(letter_matches) == 0:
+                await src_channel.send("Nuh uh, wrong letter. Try again!")
+                lives -= 1
+                continue
+
+            # Fill up the guesses list with the letter where it goes.
+            for i in letter_matches:
+                player_guesses[i] = word[i]
+
+            # If there are no more empty slots in the guesses list, then that means
+            # the player has successfully guessed the word :)
+            if not '' in player_guesses:
+                has_guessed = True
+
+        # We received a correct guess of the full word.
+        elif next_guess == word:
+            await src_channel.send(f"That's right! The correct answer is {word}!")
+            has_guessed = True
+
+        # We received a wrong guess of the full word.
+        else:
+            await src_channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
+            lives -= 1
+
+    if has_guessed:
+        await src_channel.send(f"Congratulations! You won this one {emote("GRINV")}")
+    else:
+        await src_channel.send("Better luck next time!")
 
 
 # *************************************************************************** #
