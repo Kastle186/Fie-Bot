@@ -12,12 +12,24 @@ from discord import (
     Thread,
     VoiceChannel
 )
+
+from dataclasses import dataclass
+from datetime import datetime, time, UTC
+from fieemotes import emote
 from typing import TypeAlias, Union
 
 import asyncio
 import fiecommands
 import fiegames
 import random
+
+# Class to store the necessary info to send the daily messages accordingly.
+
+@dataclass
+class DailyMessage:
+    has_been_sent_today: bool
+    scheduled_time: time
+    message: str
 
 # List of greetings Fie can use with the 'fie' command.
 
@@ -50,6 +62,45 @@ fie_image_files = [
     "fie bye bye.png",
     "fie (and laura).png",
     "ValentineKuro.png"
+]
+
+# List of daily messages and their info to send them.
+
+# NOTE: Right now, we depend on the bot getting restarted at least once a day to
+#       get all messages to be sent. It would be cool to implement something to have
+#       them reset on their own, if at some point we end up leaving the bot running
+#       during the night too.
+
+daily_messages = [
+    DailyMessage(
+        False,
+        time(hour=23, tzinfo=UTC),
+        ("<@98491257784909824> have you trained yet? "
+         "Laura is expecting you <:Laura_S:1252956467779076106>")
+    ),
+
+    DailyMessage(
+        False,
+        time(hour=19, tzinfo=UTC),
+        ("<@444271831118249996> it's a bit embarassing to hear how much you "
+         f"appreciate me but thanks! I appreciate you too Yuuyuu {emote("GRINV")}")
+    ),
+
+    DailyMessage(
+        False,
+        time(hour=21, tzinfo=UTC),
+        ("<@145607631149465600> <:Laura_S:1252956467779076106>: "
+         "HELLO NANA, HOPE YOU HAD A GOOD DAY! I STILL DON'T KNOW HOW TO "
+         "USE MY PHONE VERY WELL. HOPE YOU TAKE CARE OF YOURSELF - LAURA")
+    ),
+
+    DailyMessage(
+        False,
+        time(hour=1, tzinfo=UTC),
+        ("<@164047938325184512> <:Fie_Claussell:1304860526936985620> "
+         "Are you still awake you son of a gun? Don't you have uni tomorrow? "
+         "Or a life? Get your ass to bed immediately.")
+    ),
 ]
 
 DiscordChannelType: TypeAlias = Union[
@@ -166,6 +217,9 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     # The rest of message processing! #
     # ############################### #
 
+    # Configure the daily messages watcher.
+    client_obj.loop.create_task(send_daily_message(client_obj, is_private))
+
 
 # ******************************************************************************** #
 # SEND MESSAGES TO SERVER FUNCTIONS:                                               #
@@ -216,3 +270,38 @@ async def send_message(
     except Exception as e:
         print(e)
 
+
+# ******************************************************************************* #
+# OTHER UTILITIES:                                                                #
+# Any other utility functions that are not specific to a command or game go here. #
+# ******************************************************************************* #
+
+async def send_daily_message(client: Client, is_private: bool):
+    await client.wait_until_ready()
+
+    channel1 = client.get_channel(420709830622183434)
+    channel2 = client.get_channel(1300997938335580171)
+
+    while not client.is_closed():
+        now = datetime.now(UTC).time()
+
+        # One message goes to channel2, and the rest go to channel1. So, we need
+        # the index to know when to send to which channel.
+        for i in range(0, len(daily_messages)):
+            daily_msgobj = daily_messages[i]
+            dest_channel = channel2 if i == 1 else channel1
+
+            if not is_ready_to_send(daily_msgobj, now):
+                continue
+
+            await send_text(dest_channel, daily_msgobj.message, is_private)
+            daily_msgobj.has_been_sent_today = True
+
+        # Check every minute.
+        await asyncio.sleep(60)
+
+
+def is_ready_to_send(msg_obj: DailyMessage, curr_time: time) -> bool:
+    return (not msg_obj.has_been_sent_today) \
+        and (msg_obj.scheduled_time.hour == curr_time.hour \
+             and msg_obj.scheduled_time.minute == curr_time.minute)

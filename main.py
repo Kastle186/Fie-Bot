@@ -28,51 +28,6 @@ async def on_ready() -> None:
     print(f"{client.user} is now running!")
 
 
-sent = False
-sent2 = False
-sent3 = False
-sent4 = False
-last_messages = []
-
-async def send_daily_message():
-    global sent, sent2, sent3, sent4
-    SPECIFIC_TIME = time(22, 0)
-    SPECIFIC_TIME2 = time(18, 0)
-    SPECIFIC_TIME3 = time(20,0)
-    SPECIFIC_TIME4 = time(0, 0)
-
-    await client.wait_until_ready()
-    channel = client.get_channel(420709830622183434)
-    channel2 = client.get_channel(1300997938335580171)
-
-    while not client.is_closed():
-        now = datetime.now().time()
-
-        if not sent:
-            if now.hour == SPECIFIC_TIME.hour and now.minute == SPECIFIC_TIME.minute:
-                await channel.send("<@98491257784909824> have you trained yet? Laura is expecting you <:Laura_S:1252956467779076106>")
-                sent = True
-
-        if not sent2:
-            if now.hour == SPECIFIC_TIME2.hour and now.minute == SPECIFIC_TIME2.minute:
-                await channel2.send(f"<@444271831118249996> it's a bit embarassing to hear how much you appreciate me but thanks! i appreciate you too yuuyuu {emote("GRINV")}")
-                sent2 = True
-
-        if not sent3:
-            if now.hour == SPECIFIC_TIME3.hour and now.minute == SPECIFIC_TIME3.minute:
-                await channel.send("<@145607631149465600> <:Laura_S:1252956467779076106>: HELLO NANA, HOPE YOU HAD A GOOD DAY! I STILL DON'T KNOW HOW TO USE MY PHONE VERY WELL. HOPE YOU TAKE CARE OF YOURSELF - LAURA")
-                sent3 = True
-
-        if not sent4:
-
-            if now.hour == SPECIFIC_TIME4.hour and now.minute == SPECIFIC_TIME4.minute:
-                print("Sending message to channel 4")
-                await channel.send("<@164047938325184512> <:Fie_Claussell:1304860526936985620> Are you still awake you son of a gun? Don't you have uni tomorrow? Or a life? Get your ass to bed immediately.")
-                sent4 = True
-
-        # Check every minute.
-        await asyncio.sleep(60)
-
 # STEP 3: HANDLING INCOMING MESSAGES
 @client.event
 async def on_message(message: Message) -> None:
@@ -85,8 +40,6 @@ async def on_message(message: Message) -> None:
 
     print(f"{channel} {username}: {user_message}")
     await handle_message(client, message)
-
-    client.loop.create_task(send_daily_message())
 
     """
     REPEAT MESSAGE
