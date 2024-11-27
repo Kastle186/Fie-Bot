@@ -13,6 +13,7 @@ from discord import (
     VoiceChannel
 )
 
+from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, time, UTC
 from fieemotes import emote
@@ -102,6 +103,10 @@ daily_messages = [
          "Or a life? Get your ass to bed immediately.")
     ),
 ]
+
+# The running gag is about Fie chiming in whenever two people post the same message
+# one after the other. So, keeping track of the last 2 messages is what we need here.
+last_messages = deque(maxlen=2)
 
 DiscordChannelType: TypeAlias = Union[
     DMChannel,
@@ -220,6 +225,13 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     # Configure the daily messages watcher.
     client_obj.loop.create_task(send_daily_message(client_obj, is_private))
 
+    # Repeated messages gag :)
+    last_messages.append((message.content, message.author))
+    print(last_messages)
+
+    if is_repeated_msg(last_messages):
+        await send_text(message_obj, last_messages[1][0], is_private)
+
 
 # ******************************************************************************** #
 # SEND MESSAGES TO SERVER FUNCTIONS:                                               #
@@ -306,3 +318,16 @@ def is_ready_to_send(msg_obj: DailyMessage, curr_time: time) -> bool:
     return (not msg_obj.has_been_sent_today) \
         and (msg_obj.scheduled_time.hour == curr_time.hour \
              and msg_obj.scheduled_time.minute == curr_time.minute)
+
+
+def is_repeated_msg(msg_history: deque) -> bool:
+    if len(msg_history) < 2:
+        return False
+
+    msg1 = msg_history[0]
+    msg2 = msg_history[1]
+
+    # Each element of the message history is a tuple containing the message content
+    # first, and the author second. So, to define whether a message is repeated,
+    # we have to check for same content but different author.
+    return msg1[0] == msg2[0] and msg1[1] != msg2[1]

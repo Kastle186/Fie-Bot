@@ -1,15 +1,9 @@
-from datetime import datetime, timedelta, time
-from discord import Intents, Client, Message, File
+from discord import Intents, Client, Message
 from dotenv import load_dotenv
 from fieutils import handle_message
-from typing import Final
 
 import asyncio
-import math
 import os
-import random
-import statistics
-
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
@@ -40,17 +34,6 @@ async def on_message(message: Message) -> None:
 
     print(f"{channel} {username}: {user_message}")
     await handle_message(client, message)
-
-    """
-    REPEAT MESSAGE
-    """
-    last_messages.append((message.content, message.author))
-    print(last_messages)
-    if len(last_messages) > 2:
-        last_messages.pop(0)
-
-    if len(last_messages) == 2 and last_messages[0][0] == last_messages[1][0] and last_messages[0][1] != last_messages[1][1]:
-        await message.channel.send(last_messages[1][0])
 
 
 # STEP 4: MAIN ENTRY POINT
