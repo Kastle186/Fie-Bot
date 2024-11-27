@@ -34,9 +34,9 @@ async def on_message(message: Message) -> None:
     if message.author == client.user:
         return
 
-    username: str = str(message.author)
-    user_message: str = message.content
-    channel: str = str(message.channel)
+    username = str(message.author)
+    user_message = str(message.content)
+    channel = str(message.channel)
 
     print(f"{channel} {username}: {user_message}")
     await handle_message(client, message)

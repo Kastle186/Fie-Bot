@@ -294,6 +294,7 @@ async def send_daily_message(client: Client, is_private: bool):
             if not is_ready_to_send(daily_msgobj, now):
                 continue
 
+            print(f"Sending daily message {i+1} to channel {dest_channel}.")
             await send_text(dest_channel, daily_msgobj.message, is_private)
             daily_msgobj.has_been_sent_today = True
 
