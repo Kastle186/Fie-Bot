@@ -92,7 +92,7 @@ def fie_solve(operation: str) -> str:
 
 
 def fie_days_until(target_day_msg: str) -> str:
-    today = datetime.now()
+    today = datetime.now(UTC)
     tokens = target_day_msg.split()[5:]
     days_until_msg = ""
 
@@ -127,8 +127,8 @@ def fie_days_until(target_day_msg: str) -> str:
                           False: "Days since Daybreak II's launch"}) \
                           [daybreak2 > today]
 
-        days_until_msg = (f"{christmas_msg}: {until_christmas}\n"
-                          f"{daybreak2_msg}: {until_daybreak2}\n"
+        days_until_msg = (f"{christmas_msg}: {until_christmas + 1}\n"
+                          f"{daybreak2_msg}: {until_daybreak2 + 1}\n"
                           f"Days until Rean stops being dense: ∞")
     return days_until_msg
 
