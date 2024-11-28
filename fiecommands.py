@@ -117,7 +117,7 @@ def fie_days_until(target_day_msg: str) -> str:
         # days left until next year's Christmas.
         until_christmas = \
             ({True: (christmas - today).days,
-              False: (datetime(today.year + 1, 12, 25) - today).days}) \
+              False: (datetime(today.year + 1, 12, 25, tzinfo=UTC) - today).days}) \
               [christmas > today]
 
         daybreak2 = datetime(2025, 2, 14, tzinfo=UTC)
