@@ -167,20 +167,20 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     # Commands triggered by a phrase in a message: Utilities #
     # ###################################################### #
 
-    elif message in "fie time":
+    elif "fie time" in message:
         timezones_str = fiecommands.fie_time(message_obj.channel.id)
         await send_text(message_obj, timezones_str, is_private)
 
-    elif message in "fie solve":
+    elif "fie solve" in message:
         math_result = fiecommands.fie_solve(message)
         await send_text(message_obj, math_result, is_private)
 
-    elif message in "fie how many days until":
+    elif "fie how many days until" in message:
         days_until = fiecommands.fie_days_until(message)
         await send_text(message_obj, days_until, is_private)
 
     # TODO: Add the option to also recognize 'fie what is' as the command.
-    elif message in "fie what's":
+    elif "fie what's" in message:
         fun_fact = fiecommands.fie_what_is(message)
         await send_text(message_obj, fun_fact, is_private)
 
@@ -188,10 +188,10 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     # Commands triggered by a phrase in a message: Games #
     # ################################################## #
 
-    elif message in "fie rps":
+    elif "fie rps" in message:
         await fiegames.fie_rps(client_obj, message_obj)
 
-    elif message in "fie hangman":
+    elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
 
     # ################################### #
