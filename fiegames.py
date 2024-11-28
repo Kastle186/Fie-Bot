@@ -113,10 +113,10 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
         await src_channel.send(
             f"Current Score - You: {player_score}, Fie: {fie_score}")
 
-        if player_score > fie_score:
-            await src_channel.send(f"Damn... I lost the series {emote("PENSIVE")}")
-        else:
-            await src_channel.send(f"I won the series! {emote("GRINV")}")
+    if player_score > fie_score:
+        await src_channel.send(f"Damn... I lost the series {emote("PENSIVE")}")
+    else:
+        await src_channel.send(f"I won the series! {emote("GRINV")}")
 
 
 async def fie_hangman(client_obj: Client, message_obj: Message):
