@@ -109,7 +109,7 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
         # after each round.
 
         await src_channel.send(
-            f"You chose {player_input}, I chose {fie_input}. {result_msg}")
+            f"You chose {player_choice}, I chose {fie_choice}. {result_msg}")
         await src_channel.send(
             f"Current Score - You: {player_score}, Fie: {fie_score}")
 

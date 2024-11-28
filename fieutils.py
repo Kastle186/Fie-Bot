@@ -143,7 +143,7 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         user_message = user_message[1:]
 
     message = user_message.casefold()
-    fie_res = fiecommands.fie_response(message)
+    fie_res = fie_response(message)
 
     # We got one of the responses from Fie! So we send it to the server as is.
     if not fie_res == "<empty>":
@@ -243,14 +243,14 @@ async def send_text(
         message_or_channel_obj: Union[Message, DiscordChannelType],
         contents: str,
         is_private: bool) -> None:
-    await send_message(message_or_channel, user_message, is_private, False)
+    await send_message(message_or_channel_obj, contents, is_private, False)
 
 
 async def send_file(
         message_or_channel_obj: Union[Message, DiscordChannelType],
         contents: str,
         is_private: bool) -> None:
-    await send_message(message_or_channel, user_message, is_private, True)
+    await send_message(message_or_channel_obj, contents, is_private, True)
 
 
 async def send_message(
@@ -266,13 +266,13 @@ async def send_message(
         # object directly. So, we have to make that distinction here to call the
         # send() method accordingly.
 
-        if type(message_or_channel) is Message:
-            destination = (message_or_channel.author if is_private
-                           else message_or_channel.channel)
-        elif isinstance(message_or_channel, DiscordChannelType):
-            destination = message_or_channel
+        if type(message_or_channel_obj) is Message:
+            destination = (message_or_channel_obj.author if is_private
+                           else message_or_channel_obj.channel)
+        elif isinstance(message_or_channel_obj, DiscordChannelType):
+            destination = message_or_channel_obj
         else:
-            raise TypeError(f"Unrecognized channel type '{type(message_or_channel)}'")
+            raise TypeError(f"Unrecognized channel type '{type(message_or_channel_obj)}'")
 
         if is_file:
             await destination.send(file=File(contents))
@@ -287,6 +287,62 @@ async def send_message(
 # OTHER UTILITIES:                                                                #
 # Any other utility functions that are not specific to a command or game go here. #
 # ******************************************************************************* #
+
+# NOTE: This should go elsewhere, but I'm done dealing with that stupid circular
+#       import error :skull:
+def fie_response(user_input: str) -> str:
+    if user_input == "best girl":
+        return "Yeah that's me!"
+
+    if user_input == "fie":
+        return sylphid_greeting()
+
+    if user_input == "fie help":
+        return help_msg()
+
+    if any(msg in user_input for msg in ["hi fie", "hey fie"]):
+        return f"Hey what's up {emote("WAVE")}"
+
+    if any(msg in user_input for msg in ["thank you fie", "thanks fie"]):
+        return f"At your service {emote("SALUTE")}"
+
+    if any(msg in user_input for msg in
+           ["good job fie",
+            "good work fie",
+            "nice job fie",
+            "nice work fie"]):
+        return f"Thanks~ {emote("BLUSHV")}"
+
+    if emote("GRINV") in user_input:
+        return emote("GRINV")
+
+    if "good night fie" in user_input:
+        return f"Night night {emote("SLEEP")}"
+
+    if "professorpd" in user_input:
+        return f"ProfessorPd owns me {emote("PENSIVE")}"
+
+    if "yuuyuu" in user_input:
+        return f"He's a good boy {emote("RELAXED")}"
+
+    if "good morning fie" in user_input:
+        return f"Morning {emote("WAVE")}"
+
+    # IDEA: Would be cool to somehow use some sports news outlet's API to get
+    #       actual results of games here.
+
+    if "fie gsw" in user_input:
+        return "The Warriors are 9-2!"
+
+    if "fie bulls" in user_input:
+        return "The Bulls are 5-7! :("
+
+    # Fie ain't taking blame on being mean ever >:)
+    if "fie you're a meanie" in user_input:
+        return "No u!"
+
+    return "<empty>"
+
 
 async def send_daily_message(client: Client, is_private: bool):
     await client.wait_until_ready()

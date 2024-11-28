@@ -1,6 +1,7 @@
 from discord import Intents, Client, Message
 from dotenv import load_dotenv
 from fieutils import handle_message
+from typing import Final
 
 import asyncio
 import os
