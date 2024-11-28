@@ -54,6 +54,7 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
         best_of = int(best_of_msg.content)
         if best_of % 2 == 0:
             await src_channel.send("Hey dummy, do you know what an odd number is?")
+            return
 
     except asyncio.TimeoutError:
         await src_channel.send(
@@ -124,10 +125,10 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
     await src_channel.send(
         "Try to guess the trails related word! It can be people, terms, or countries!\n"
         "First, choose a difficulty, trails style hehe...\n"
-        "1-Easy\n"
-        "2-Normal\n"
-        "3-Hard\n"
-        "4-Nightmare\n")
+        "1 - Easy\n"
+        "2 - Normal\n"
+        "3 - Hard\n"
+        "4 - Nightmare\n")
 
     # IDEA: Might be cool to keep track of the frequency of the words outside of
     #       this code. So that we can have a better chance of getting them all
@@ -138,7 +139,7 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
             and m.channel == message_obj.channel \
             and m.content.isdigit()
     try:
-        difficulty_chosen = await client_obj.wait_for(
+        difficulty_chosen_msg = await client_obj.wait_for(
             'message',
             check=check_for_difficulty_answer,
             timeout=30.0)
@@ -149,10 +150,10 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
         return
 
     word = random.choice(trails_words)
-
-    # Initializing lives here, because the console complains otherwise
+    difficulty_index = int(difficulty_chosen_msg.content)
     lives = 0
-    match int(difficulty_chosen.content):
+
+    match difficulty_index:
         # Easy
         case 1:
             lives = 4 * len(word)
@@ -166,11 +167,12 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
         case 4:
             lives = len(word)
         case _:
-            await src_channel.send(f" Whatever {difficulty_chosen.content} is, it's not a valid option")
-    has_guessed = False
+            await src_channel.send(f"Hey dummy, there is no '{difficulty_index}' option!")
+            return
 
     # List where we keep track of the player's correct guesses so far.
     player_guesses = [''] * len(word)
+    has_guessed = False
 
     def check_for_guess(m):
         return m.author == message_obj.author and m.channel == message_obj.channel
@@ -180,7 +182,7 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
             await src_channel.send(f"You lost! The correct word was '{word}'.")
             break
 
-        await src_channel.send(str(player_guesses))
+        await src_channel.send(get_hangman_progress(player_guesses))
         await src_channel.send(f"Guess a letter/the word!\nLives: {lives}")
 
         try:
@@ -252,3 +254,7 @@ def check_rps_round_result(choice1: str, choice2: str) -> int:
         return 1
 
     return 2
+
+
+def get_hangman_progress(guesses: list[chr]) -> str:
+    return ' '.join(map(lambda c: '_' if c == '' else c, guesses))
