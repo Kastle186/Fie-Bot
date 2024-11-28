@@ -55,14 +55,14 @@ fiehelp = ("'fie rps' -> Play rock/paper/scissors with yours truly\n"
 # List of Fie images! We seriously are obsessed.
 
 fie_image_files = [
-    "fie.png",
-    "Fie_Claussell_SD_29.png",
-    "Rean x fie.png",
-    "stylish fie.png",
-    "cute fie.png",
-    "fie bye bye.png",
-    "fie (and laura).png",
-    "ValentineKuro.png"
+    "images/fie.png",
+    "images/Fie_Claussell_SD_29.png",
+    "images/Rean x fie.png",
+    "images/stylish fie.png",
+    "images/cute fie.png",
+    "images/fie bye bye.png",
+    "images/fie (and laura).png",
+    "images/ValentineKuro.png"
 ]
 
 # List of daily messages and their info to send them.
@@ -158,10 +158,10 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         await send_file(message_obj, img_to_send, is_private)
 
     elif message == "kastle":
-        await send_file(message_obj, "Noel.png", is_private)
+        await send_file(message_obj, "images/Noel.png", is_private)
 
     elif message == "kayrennede007":
-        await send_file(message_obj, "HOT-SHOT_-_Renne_Kuro.png", is_private)
+        await send_file(message_obj, "images/HOT-SHOT_-_Renne_Kuro.png", is_private)
 
     # ###################################################### #
     # Commands triggered by a phrase in a message: Utilities #
