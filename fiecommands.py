@@ -72,7 +72,7 @@ def fie_solve(operation: str) -> str:
     # then the operation is incomplete, and if we have more than 3 operands, then
     # Fie won't like it :)
 
-    if result == None:
+    if result is None:
         if len(tokens) < 3:
             return f"Hey dummy, your operation '{" ".join(tokens)}' is malformed."
 

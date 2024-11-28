@@ -226,7 +226,7 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     client_obj.loop.create_task(send_daily_message(client_obj, is_private))
 
     # Repeated messages gag :)
-    last_messages.append((message.content, message.author))
+    last_messages.append((message_obj.content, message_obj.author))
     print(last_messages)
 
     if is_repeated_msg(last_messages):
