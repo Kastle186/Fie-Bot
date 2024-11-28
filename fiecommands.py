@@ -99,7 +99,7 @@ def fie_days_until(target_day_msg: str) -> str:
     # A specific date was given, so calculate how long until or how long has passed
     # since said date.
     if len(tokens) > 0:
-        target = datetime.strptime(tokens[0], "%d-%m-%Y")
+        target = datetime.strptime(f"{tokens[0]} UTC", "%d-%m-%Y %Z")
         delta = target - today
 
         days_until_msg = \
@@ -110,7 +110,7 @@ def fie_days_until(target_day_msg: str) -> str:
     # No specific date given, so Fie will show the days until or after some
     # important dates.
     else:
-        christmas = datetime(today.year, 12, 25)
+        christmas = datetime(today.year, 12, 25, tzinfo=UTC)
         christmas_msg = "Days until Christmas"
 
         # If Christmas has already passed this year, then Fie will tell how many
@@ -120,7 +120,7 @@ def fie_days_until(target_day_msg: str) -> str:
               False: (datetime(today.year + 1, 12, 25) - today).days}) \
               [christmas > today]
 
-        daybreak2 = datetime(2025, 2, 14)
+        daybreak2 = datetime(2025, 2, 14, tzinfo=UTC)
         until_daybreak2 = (daybreak2 - today).days
 
         daybreak2_msg = ({True: "Days until Daybreak II",
