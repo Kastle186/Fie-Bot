@@ -171,7 +171,7 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
             return
 
     # List where we keep track of the player's correct guesses so far.
-    player_guesses = [''] * len(word)
+    player_guesses = [""] * len(word)
     has_guessed = False
 
     def check_for_guess(m):
@@ -256,5 +256,5 @@ def check_rps_round_result(choice1: str, choice2: str) -> int:
     return 2
 
 
-def get_hangman_progress(guesses: list[chr]) -> str:
-    return ' '.join(map(lambda c: '_' if c == '' else c, guesses))
+def get_hangman_progress(guesses: list[str]) -> str:
+    return ' '.join(map(lambda c: "\\_" if c == "" else c, guesses))
