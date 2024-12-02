@@ -9,15 +9,15 @@ import random
 rps_choices = ['rock', 'paper', 'scissors']
 
 trails_words = [
-    "agate", "albarea", "alisa", "altina", "arcus", "arkride", "arseid", "arts",
-    "ash", "bannings", "bright", "calvard", "capua", "cassius", "claussell", "claire",
-    "crafts", "crossbell", "crow", "elie", "elise", "elliot", "emma", "erebonia",
-    "estelle", "eugent", "fie", "fran", "gaius", "guild", "guy", "heiyue", "joshua",
-    "josette", "juna", "jusis", "kea", "kloe", "kurt", "laura", "lechter", "liberl",
-    "lloyd", "machias", "macdowell", "millium", "mueller", "musse", "noel", "olivert",
-    "orbment", "orlando", "osborne", "ouroboros", "plato", "randy", "rean", "reinford",
-    "remiferia", "renne", "rixia", "rufus", "sara", "schwarzer", "seeker", "tio",
-    "tita", "toval", "towa", "valimar", "van", "vander", "wazy", "zin"
+    "agate", "albarea", "alisa", "altina", "arcus", "arkride", "arseid", "arts", "ash",
+    "bannings", "bareahard", "bose", "bright", "calvard", "capua", "cassius", "celdic", "claussell",
+    "claire", "crafts", "crossbell", "crow", "elie", "elise", "elliot", "emma", "erebonia",
+    "estelle", "eugent", "fie", "fran", "gaius", "grancel", "guild", "guy", "heimdallr", "heiyue",
+    "joshua", "josette", "juna", "jusis", "kea", "kloe", "kurt", "laura", "lechter", "leeves", "legram",
+    "liberl", "lloyd", "machias", "macdowell", "millium", "mishelam", "mueller", "musse", "noel", "olivert",
+    "orbment", "ordis", "orlando", "osborne", "ouroboros", "parm", "plato", "randy", "raquel", "rean", "reinford",
+    "remiferia", "renne", "rixia", "roer", "roland", "ruan", "rufus", "sara", "schwarzer", "seeker", "tio",
+    "tita", "toval", "towa", "trista", "valimar", "van", "vander", "wazy", "ymir", "zeiss", "zin"
 ]
 
 # ****************************************************************************** #
