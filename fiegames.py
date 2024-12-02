@@ -17,7 +17,7 @@ trails_words = [
     "lloyd", "machias", "macdowell", "millium", "mueller", "musse", "noel", "olivert",
     "orbment", "orlando", "osborne", "ouroboros", "plato", "randy", "rean", "reinford",
     "remiferia", "renne", "rixia", "rufus", "sara", "schwarzer", "seeker", "tio",
-    "tita", "toval", "towa", "valimar", "van", "vander", "zin"
+    "tita", "toval", "towa", "valimar", "van", "vander", "wazy", "zin"
 ]
 
 # ****************************************************************************** #
