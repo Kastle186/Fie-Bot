@@ -123,7 +123,7 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
 async def fie_hangman(client_obj: Client, message_obj: Message):
     src_channel = message_obj.channel
     await src_channel.send(
-        "Try to guess the trails related word! It can be people, terms, or countries!\n"
+        "Try to guess the trails related word! It can be people, terms, towns/cities, or countries!\n"
         "First, choose a difficulty, trails style hehe...\n"
         "1 - Easy\n"
         "2 - Normal\n"
