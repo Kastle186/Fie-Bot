@@ -4,21 +4,28 @@ from discord import Client, Message
 from fieemotes import emote
 
 import asyncio
+import csv
+import os
 import random
 
 rps_choices = ['rock', 'paper', 'scissors']
 
 trails_words = [
-    "agate", "albarea", "alisa", "altina", "arcus", "arkride", "arseid", "arts", "ash",
-    "bannings", "bareahard", "bose", "bright", "calvard", "capua", "cassius", "celdic", "claussell",
-    "claire", "crafts", "crossbell", "crow", "elie", "elise", "elliot", "emma", "erebonia",
-    "estelle", "eugent", "fie", "fran", "gaius", "grancel", "guild", "guy", "heimdallr", "heiyue",
-    "joshua", "josette", "juna", "jusis", "kea", "kloe", "kurt", "laura", "lechter", "leeves", "legram",
-    "liberl", "lloyd", "machias", "macdowell", "millium", "mishelam", "mueller", "musse", "noel", "olivert",
-    "orbment", "ordis", "orlando", "osborne", "ouroboros", "parm", "plato", "randy", "raquel", "rean", "reinford",
-    "remiferia", "renne", "rixia", "roer", "roland", "ruan", "rufus", "sara", "schwarzer", "seeker", "tio",
-    "tita", "toval", "towa", "trista", "valimar", "van", "vander", "wazy", "ymir", "zeiss", "zin"
+    "agate", "albarea", "alisa", "altina", "arcus", "arkride", "arseid", "arts",
+    "ash", "bannings", "bareahard", "bose", "bright", "calvard", "capua", "cassius",
+    "celdic", "claussell", "claire", "crafts", "crossbell", "crow", "elie", "elise",
+    "elliot", "emma", "erebonia", "estelle", "eugent", "fie", "fran", "gaius",
+    "grancel", "guild", "guy", "heimdallr", "heiyue", "joshua", "josette", "juna",
+    "jusis", "kea", "kloe", "kurt", "laura", "lechter", "leeves", "legram", "liberl",
+    "lloyd", "machias", "macdowell", "millium", "mishelam", "mueller", "musse",
+    "noel", "olivert", "orbment", "ordis", "orlando", "osborne", "ouroboros", "parm",
+    "plato", "randy", "raquel", "rean", "reinford", "remiferia", "renne", "rixia",
+    "roer", "roland", "ruan", "rufus", "sara", "schwarzer", "seeker", "tio", "tita",
+    "toval", "towa", "trista", "valimar", "van", "vander", "wazy", "ymir", "zeiss", "zin"
 ]
+
+leaderboard_file = 'fie_games_leaderboard.csv'
+leaderboard = dict()
 
 # ****************************************************************************** #
 # FIE MINI-GAMES:                                                                #
@@ -29,6 +36,13 @@ trails_words = [
 # ****************************************************************************** #
 
 async def fie_rps(client_obj: Client, message_obj: Message) -> None:
+
+    # Initialize leaderboard dictionary lazily for the sake of efficiency.
+
+    if len(leaderboard) == 0:
+        init_leaderboard()
+
+    player_name = message_obj.author.name
     src_channel = message_obj.channel
     await src_channel.send("Best of how many? (Type an odd number pls)")
 
@@ -60,6 +74,12 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
         await src_channel.send(
             f"You took too long to decide! I'm going to sleep {emote("SLEEP")}")
         return
+
+    # If this is the first time of the current player playing a Fie-Game, then add
+    # their respective entry to the leaderboard.
+
+    if not player_name in leaderboard:
+        leaderboard[player_name] = [0, 0]
 
     await src_channel.send("Let's play then!")
 
@@ -115,12 +135,21 @@ async def fie_rps(client_obj: Client, message_obj: Message) -> None:
             f"Current Score - You: {player_score}, Fie: {fie_score}")
 
     if player_score > fie_score:
+        # Placeholder while we define how to score this game.
+        update_leaderboard(player_name, best_of, 0)
         await src_channel.send(f"Damn... I lost the series {emote("PENSIVE")}")
     else:
         await src_channel.send(f"I won the series! {emote("GRINV")}")
 
 
 async def fie_hangman(client_obj: Client, message_obj: Message):
+
+    # Initialize leaderboard dictionary lazily for the sake of efficiency.
+
+    if len(leaderboard) == 0:
+        init_leaderboard()
+
+    player_name = message_obj.author.name
     src_channel = message_obj.channel
     await src_channel.send(
         "Try to guess the trails related word! It can be people, terms, towns/cities, or countries!\n"
@@ -148,6 +177,12 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
         await src_channel.send(
             f"You took too long to decide! I'm going to sleep {emote("SLEEP")}")
         return
+
+    # If this is the first time of the current player playing a Fie-Game, then add
+    # their respective entry to the leaderboard.
+
+    if not player_name in leaderboard:
+        leaderboard[player_name] = [0, 0]
 
     word = random.choice(trails_words)
     difficulty_index = int(difficulty_chosen_msg.content)
@@ -229,6 +264,9 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
             lives -= 1
 
     if has_guessed:
+        # Add the score of this victory to this player's leaderboard entry.
+        # Fie Hangman is the second stored score.
+        update_leaderboard(player_name, difficulty_index, 1)
         await src_channel.send(f"Congratulations! You won this one {emote("GRINV")}")
     else:
         await src_channel.send("Better luck next time!")
@@ -258,3 +296,40 @@ def check_rps_round_result(choice1: str, choice2: str) -> int:
 
 def get_hangman_progress(guesses: list[str]) -> str:
     return ' '.join(map(lambda c: "\\_" if c == "" else c, guesses))
+
+
+def init_leaderboard() -> None:
+    # If there are no leaderboard records, then we'll just keep the empty one.
+    if not os.path.exists(leaderboard_file):
+        return
+
+    # Otherwise, read its contents from its CSV file. Each entry comprises 3 values:
+    # - Player's name (retrieved from message_obj.author)
+    # - Player's total score in Fie RPS
+    # - Player's total score in Fie Hangman
+
+    with open(leaderboard_file, mode='r', newline='\n') as the_file:
+        csv_contents = csv.reader(the_file)
+        next(csv_contents, None) # Skip the header.
+
+        for entries in csv_contents:
+            leaderboard[entries[0]] = [entries[1], entries[2]]
+
+
+# TODO: It would be preferable to use an enum instead of a number to denote which
+#       game's score we are updating. But I'm sleepy, so some other time :)
+
+def update_leaderboard(player: str, score: int, game: int) -> None:
+    global leaderboard
+
+    # Update live dictionary object.
+    leaderboard[player][game] += score
+
+    fields = ['Player', 'RPS Score', 'Hangman Score']
+    entries = [[key, value[0], value[1]] for key, value in leaderboard.items()]
+
+    # Update leaderboard file.
+    with open(leaderboard_file, mode='w', newline='\n') as the_file:
+        csv_writer = csv.writer(the_file)
+        csv_writer.writerow(fields)
+        csv_writer.writerows(entries)
