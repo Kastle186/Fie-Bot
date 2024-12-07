@@ -313,7 +313,7 @@ def init_leaderboard() -> None:
         next(csv_contents, None) # Skip the header.
 
         for entries in csv_contents:
-            leaderboard[entries[0]] = [entries[1], entries[2]]
+            leaderboard[entries[0]] = [int(entries[1]), int(entries[2])]
 
 
 # TODO: It would be preferable to use an enum instead of a number to denote which
