@@ -16,6 +16,8 @@ from discord import (
 from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, time, UTC
+
+import fietrails
 from fieemotes import emote
 from typing import TypeAlias, Union
 
@@ -194,19 +196,20 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
 
+    elif "fie trails" in message:
+        await fietrails.fie_trails(client_obj,message_obj)
+
     # ################################### #
     # Demi's own command for his schedule #
     # ################################### #
 
     elif message == "fie schedule":
         tasks = [
-            "4th of December - SO (Test)",
-            "9th of December - SO (project due date)",
-            "9th of December - PCO (forum)",
             "12th of December - SI (Test)",
-            "13th of December - SI (TP)",
             "18th of December - PCO (Test)",
-            "16th/19th of December - SI (presentation)"
+            "16th/19th of December - SI (presentation)",
+            "27th of December - SI (TP)",
+            "6th of January - PCO (Project)"
         ]
 
         user = await client_obj.fetch_user(164047938325184512)
