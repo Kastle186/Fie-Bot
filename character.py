@@ -23,3 +23,14 @@ class Character:
             self.crafts.append(Craft("Gale", self.STR * 3, 35))
         if self.level >= 55:
             self.crafts.append(Craft("Flame Impact", self.STR * 4, 35))
+
+    def getHP(self):
+        return self.HP
+
+    def get_crafts(self):
+        return self.crafts
+
+    def __str__(self):
+        return self.crafts
+
+

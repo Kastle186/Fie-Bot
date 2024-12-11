@@ -1,31 +1,69 @@
 from character import Character
 from enemy import Enemy
 import random
+import asyncio
+from fieemotes import emote
 from discord import Client, Message
 
+Rean = Character("Rean",500,50,50,25,30,30,1)
+Dino = Enemy("Scary Dinosaur",400,30,30,20,20,20,1)
 
-class Combat:
 
-    async def choose_craft(self, character: Character):
+async def fight(client_obj: Client, message_obj: Message) -> None:
+    src_channel = message_obj.channel
+
+    async def choose_craft(character: Character):
         for i in range(0, len(character.crafts)):
-            await src_channel.send(f"{i}- " + character.crafts[i] + "\n")
-        craft_chosen = int(input())
+            await src_channel.send(f"{i}- " + str(character.crafts[i]) + "\n")
+
+        def check_craft_choice(m):
+            return m.author == message_obj.author \
+                and m.channel == message_obj.channel \
+                and m.content.isdigit()
+
+        try:
+            craft_choice = await client_obj.wait_for(
+                'message',
+                check=check_craft_choice,
+                timeout=30.0)
+        except asyncio.TimeoutError:
+            await src_channel.send(
+                f"You took too long to decide! I'm going to sleep {emote("SLEEP")}")
+            return
+
+        craft_chosen = int(craft_choice.content)
         return character.crafts[craft_chosen].damage
 
-    async def character_turn(self, character: Character):
+    async def character_turn(character: Character):
         await src_channel.send("Choose an action\n"
                                "1-Normal Attack\n"
                                "2-Crafts\n"
                                "3-Arts\n"
                                "4-Items\n")
-        option = int(input)
+
+        def check_combat_choice(m):
+            return m.author == message_obj.author \
+                and m.channel == message_obj.channel \
+                and m.content.isdigit()
+
+        try:
+            combat_choice = await client_obj.wait_for(
+                'message',
+                check=check_combat_choice,
+                timeout=30.0)
+        except asyncio.TimeoutError:
+            await src_channel.send(
+                f"You took too long to decide! I'm going to sleep {emote("SLEEP")}")
+            return
+
+        option = int(combat_choice.content)
         match option:
             # Normal Attack
             case 1:
                 return character.STR
             # Crafts
             case 2:
-                return self.choose_craft(character)
+                return await choose_craft(character)
             # Arts
             case 3:
                 return 0
@@ -33,7 +71,7 @@ class Combat:
             case 4:
                 return 0
 
-    def enemy_turn(self, enemy: Enemy):
+    def enemy_turn(enemy: Enemy):
         choice = random.randint(0, 2)
         match choice:
             # Normal Attack
@@ -41,40 +79,54 @@ class Combat:
                 return enemy.STR
             # Random craft
             case _:
-                return enemy.crafts[choice]
-
-    async def check_victory(self, enemy: Enemy):
+                  # return enemy.crafts[choice]
+                return enemy.STR
+    async def check_victory(enemy: Enemy):
         if enemy.HP <= 0:
             await src_channel.send("You won!\n")
             return True
+        return False
 
-    async def check_defeat(self, character: Character):
+    async def check_defeat(character: Character):
         if character.HP <= 0:
             await src_channel.send("You lost!\n")
             return True
+        return False
 
-    def start_fight(self, character: Character, enemy: Enemy):
-        while character.HP > 0 or enemy.HP > 0:
+    async def start_fight(character: Character, enemy: Enemy):
+        while character.HP > 0 and enemy.HP > 0:
             if character.SPD >= enemy.SPD:
-                enemy.HP -= self.character_turn(character)
+                enemy.HP -= await character_turn(character)
+                await src_channel.send(enemy.getHP())
 
                 # Check if the enemy is dead
-                if self.check_victory(enemy): return
+                if await check_victory(enemy):
+                    return
 
-                character.HP -= self.enemy_turn(enemy)
+                character.HP -= enemy_turn(enemy)
+                await src_channel.send(character.getHP())
 
                 # Check if the player is dead
-                if self.check_defeat(character): return
+                if await check_defeat(character):
+                    return
 
             else:
-                character.HP -= self.enemy_turn(enemy)
+                character.HP -= enemy_turn(enemy)
+                await src_channel.send(character.getHP())
 
                 # Check if the player is dead
-                if self.check_defeat(character): return
-                enemy.HP -= self.character_turn(character)
+                if await check_defeat(character):
+                    return
+
+                enemy.HP -= await character_turn(character)
+                await src_channel.send(enemy.getHP())
 
                 # Check if the enemy is dead
-                if self.check_victory(enemy): return
+                if await check_victory(enemy):
+                    return
 
-        self.check_victory(enemy)
-        self.check_defeat(character)
+        await check_victory(enemy)
+        await check_defeat(character)
+
+    await start_fight(Rean,Dino)
+

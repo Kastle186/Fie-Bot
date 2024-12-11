@@ -12,3 +12,6 @@ class Enemy:
         self.ADF = ADF
         self.level = level
         self.crafts = []
+
+    def getHP(self):
+        return self.HP
