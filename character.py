@@ -24,8 +24,7 @@ class Character:
         if self.level >= 35:
             self.crafts.append(Craft("Gale", self.STR * 3, 35))
         if self.level >= 55:
-            self.crafts.app
-            end(Craft("Flame Impact", self.STR * 4, 35))
+            self.crafts.append(Craft("Flame Impact", self.STR * 4, 35))
 
     def getHP(self):
         return self.HP
