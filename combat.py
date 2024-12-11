@@ -1,12 +1,13 @@
 from character import Character
 from enemy import Enemy
+from craft import Craft
 import random
 import asyncio
 from fieemotes import emote
 from discord import Client, Message
 
-Rean = Character("Rean",500,50,50,25,30,30,1)
-Dino = Enemy("Scary Dinosaur",400,30,30,20,20,20,1)
+Rean = Character("Rean",500,50,50,25,30,30,1, 0,1,0)
+Dino = Enemy("Scary Dinosaur",400,30,30,20,20,20,1,50,1,50, [Craft("Bite", 30 * 2, 20), Craft("Decimate", 30 * 3, 40)])
 
 
 async def fight(client_obj: Client, message_obj: Message) -> None:
@@ -32,6 +33,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             return
 
         craft_chosen = int(craft_choice.content)
+        character.setCP(character.getCP() - character.crafts[craft_chosen].cost)
         return character.crafts[craft_chosen].damage
 
     async def character_turn(character: Character):
@@ -79,16 +81,18 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                 return enemy.STR
             # Random craft
             case _:
-                  # return enemy.crafts[choice]
-                return enemy.STR
-    async def check_victory(enemy: Enemy):
-        if enemy.HP <= 0:
+                enemy.setCP(enemy.getCP() - enemy.crafts[choice].cost)
+                return enemy.crafts[choice]
+    async def check_victory(enemy: Enemy, character: Character):
+        if enemy.getHP() <= 0:
             await src_channel.send("You won!\n")
+            character.setXP(character.getXP() + enemy.getXP())
+            await src_channel.send("XP gained:")
             return True
         return False
 
     async def check_defeat(character: Character):
-        if character.HP <= 0:
+        if character.getHP() <= 0:
             await src_channel.send("You lost!\n")
             return True
         return False
@@ -96,14 +100,12 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
     async def start_fight(character: Character, enemy: Enemy):
         while character.HP > 0 and enemy.HP > 0:
             if character.SPD >= enemy.SPD:
-                enemy.HP -= await character_turn(character)
-                await src_channel.send(enemy.getHP())
-
+                enemy.setHP(enemy.getDEF() - await character_turn(character))
                 # Check if the enemy is dead
-                if await check_victory(enemy):
+                if await check_victory(enemy, character):
                     return
 
-                character.HP -= enemy_turn(enemy)
+                character.setHP(character.getDEF() - enemy_turn(enemy))
                 await src_channel.send(character.getHP())
 
                 # Check if the player is dead
@@ -111,21 +113,21 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                     return
 
             else:
-                character.HP -= enemy_turn(enemy)
+                character.setHP(character.getDEF() - enemy_turn(enemy))
                 await src_channel.send(character.getHP())
 
                 # Check if the player is dead
                 if await check_defeat(character):
                     return
 
-                enemy.HP -= await character_turn(character)
+                enemy.setHP(enemy.getDEF() - await character_turn(character))
                 await src_channel.send(enemy.getHP())
 
                 # Check if the enemy is dead
-                if await check_victory(enemy):
+                if await check_victory(enemy, character):
                     return
 
-        await check_victory(enemy)
+        await check_victory(enemy, character)
         await check_defeat(character)
 
     await start_fight(Rean,Dino)
