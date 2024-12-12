@@ -6,8 +6,8 @@ import asyncio
 from fieemotes import emote
 from discord import Client, Message
 
-Rean = Character("Rean",500,50,50,25,30,30,1, 0,1,0)
-Dino = Enemy("Scary Dinosaur",400,30,30,20,20,20,1,50,1,50, [Craft("Bite", 30 * 2, 20), Craft("Decimate", 30 * 3, 40)])
+Rean = Character("Rean", 500, 50, 50, 25, 30, 30, 1, 0, 1, 0)
+Dino = Enemy("Scary Dinosaur", 400, 30, 30, 20, 20, 20, 1, 50, 1, 50, [Craft("Bite", 30 * 2, 20), Craft("Decimate", 30 * 3, 40)])
 
 
 async def fight(client_obj: Client, message_obj: Message) -> None:

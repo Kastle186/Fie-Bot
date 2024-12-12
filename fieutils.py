@@ -205,9 +205,8 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "12th of December - SI (Test)",
+            "16th of December - PCO (Forum)",
             "18th of December - PCO (Test)",
-            "16th/19th of December - SI (presentation)",
             "27th of December - SI (TP)",
             "6th of January - PCO (Project)"
         ]
