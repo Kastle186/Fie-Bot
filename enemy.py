@@ -9,7 +9,6 @@ class Enemy:
         self.HP = HP
         self.EP = EP
         self.CP = CP
-        self.STR = HP
         self.STR = STR
         self.DEF = DEF
         self.SPD = SPD
@@ -49,3 +48,9 @@ class Enemy:
         self.DEF = DEF
     def getXP(self):
         return self.xp
+
+    def get_crafts(self):
+        return self.crafts
+
+    def __str__(self):
+        return str(self.crafts)

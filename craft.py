@@ -4,3 +4,6 @@ class Craft:
         self.damage = damage
         self.cost = cost
 
+    def __str__(self):
+        return self.name + " - " + str(self.cost) + " CP"
+

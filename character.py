@@ -5,7 +5,7 @@ class Character:
                  ADF: int, level: int, current_xp: int):
         self.name = name
         self.HP = HP
-        self.STR = HP
+        self.STR = STR
         self.EP = EP
         self.CP = CP
         self.DEF = DEF
