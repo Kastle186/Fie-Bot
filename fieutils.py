@@ -170,6 +170,9 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     elif message == "rean":
         await send_file(message_obj, "images/Rean_Menu_CSI.png", is_private)
 
+    elif message == "rean2":
+        await send_file(message_obj, "images/Rean_Schwarzer_S-Craft_Summer.png", is_private)
+
     # ###################################################### #
     # Commands triggered by a phrase in a message: Utilities #
     # ###################################################### #

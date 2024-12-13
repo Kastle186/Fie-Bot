@@ -26,6 +26,8 @@ class Character:
             self.crafts.append(Craft("Gale", self.STR * 3, 35))
         if self.level >= 55:
             self.crafts.append(Craft("Flame Impact", self.STR * 4, 35))
+        if self.level >= 10:
+            self.crafts.append(Craft("S-Craft - Flame Slash", self.STR * 10, 200))
 
     def getName(self):
         return self.name

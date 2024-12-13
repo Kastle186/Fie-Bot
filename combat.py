@@ -1,3 +1,4 @@
+import fieutils
 from character import Character
 from enemy import Enemy
 from craft import Craft
@@ -34,6 +35,8 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
 
         craft_chosen = int(craft_choice.content)
         character.setCP(character.getCP() - character.crafts[craft_chosen-1].cost)
+        if character.crafts[craft_chosen-1].name == "S-Craft - Flame Slash":
+            await fieutils.send_file(message_obj, "images/Rean_Schwarzer_S-Craft_Summer.png", True)
         return character.crafts[craft_chosen-1].damage
 
     async def character_turn(character: Character):
