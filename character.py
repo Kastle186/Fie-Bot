@@ -1,4 +1,5 @@
 from craft import Craft
+import math
 class Character:
     def __init__(self, name: str, HP: int, EP:int, CP: int,
                  STR: int, DEF: int, SPD: int, ATS: int,
@@ -25,6 +26,9 @@ class Character:
             self.crafts.append(Craft("Gale", self.STR * 3, 35))
         if self.level >= 55:
             self.crafts.append(Craft("Flame Impact", self.STR * 4, 35))
+
+    def getName(self):
+        return self.name
 
     def getHP(self):
         return self.HP
@@ -59,13 +63,37 @@ class Character:
     def setDEF(self, DEF: int):
         self.DEF = DEF
 
+    def getSPD(self):
+        return self.SPD
+
+    def getATS(self):
+        return self.ATS
+
+    def getADF(self):
+        return self.ADF
+
     def getXP(self):
         return self.current_xp
 
     def setXP(self, XP: int):
         self.current_xp = XP
 
+    def getLVL(self):
+        return self.level
+
     def __str__(self):
         return str(self.crafts)
+
+    def status(self):
+        return (f"Name: {self.getName()}\n"
+                f"Level: {self.getLVL()}\n"
+                f"HP:  {self.getHP()}       EXP: {self.getXP()}\n"
+                f"STR: {self.getSTR()}      ATS: {self.getATS()}\n"
+                f"DEF: {self.getDEF()}      ADF: {self.getADF()}\n"
+                f"SPD: {self.getSPD()}\n")
+
+    def calculate_level(self):
+        self.level = math.log2(self.current_xp)
+
 
 

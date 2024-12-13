@@ -2,7 +2,7 @@
 
 from discord import Client, Message
 from fieemotes import emote
-from combat import fight
+from combat import fight, Rean
 from character import Character
 from enemy import Enemy
 
@@ -10,6 +10,7 @@ import asyncio
 import csv
 import os
 import random
+import fieutils
 
 
 async def fie_trails(client_obj: Client, message_obj: Message):
@@ -47,9 +48,9 @@ async def fie_trails(client_obj: Client, message_obj: Message):
             return 0
         # Show status
         case 4:
-            return 0
-
+            await fieutils.send_file(message_obj, "images/Rean_Menu_CSI.png", True)
+            await src_channel.send(Character.status(Rean))
         case _:
-            return "Are you serious? All you have to do is choose between 1 and 4...\n"
+            return await src_channel.send("Are you serious? All you have to do is choose between 1 and 4...\n")
 
 

@@ -64,7 +64,9 @@ fie_image_files = [
     "images/cute fie.png",
     "images/fie bye bye.png",
     "images/fie (and laura).png",
-    "images/ValentineKuro.png"
+    "images/ValentineKuro.png",
+    "images/Rean_Menu_CSI.png",
+    "Rean_Schwarzer_S-Craft_Summer.png"
 ]
 
 # List of daily messages and their info to send them.
@@ -164,6 +166,9 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "kayrennede007":
         await send_file(message_obj, "images/HOT-SHOT_-_Renne_Kuro.png", is_private)
+
+    elif message == "rean":
+        await send_file(message_obj, "images/Rean_Menu_CSI.png", is_private)
 
     # ###################################################### #
     # Commands triggered by a phrase in a message: Utilities #
