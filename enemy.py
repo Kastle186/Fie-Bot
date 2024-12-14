@@ -17,6 +17,7 @@ class Enemy:
         self.level = level
         self.xp = xp
         self.crafts = crafts
+        self._initial_state = self.__dict__.copy()
 
     def getHP(self):
         return self.HP
@@ -54,3 +55,8 @@ class Enemy:
 
     def __str__(self):
         return str(self.crafts)
+
+    # IMPORTANT: This only works once. A new way has to be found for this
+    def reset(self):
+        # Restore attributes from the initial state
+        self.__dict__ = self._initial_state.copy()

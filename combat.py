@@ -1,3 +1,4 @@
+from time import sleep
 import fieutils
 from character import Character
 from enemy import Enemy
@@ -9,7 +10,7 @@ from discord import Client, Message
 
 Rean = Character("Rean Schwarzer", 500, 50, 50, 25, 30, 30, 30, 20, 60, 0)
 Dino = Enemy("Scary Dinosaur", 400, 30, 30, 20, 20, 20, 1, 50, 1, 50, [Craft("Bite", 30 * 2, 20), Craft("Decimate", 30 * 3, 40)])
-
+initialized = False
 
 async def fight(client_obj: Client, message_obj: Message) -> None:
     src_channel = message_obj.channel
@@ -36,7 +37,14 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
         craft_chosen = int(craft_choice.content)
         character.setCP(character.getCP() - character.crafts[craft_chosen-1].cost)
         if character.crafts[craft_chosen-1].name == "S-Craft - Flame Slash":
+            await src_channel.send("Aoki honoo yo...\n")
+            sleep(1)
+            await src_channel.send("Waga ken ni tsudoe!\n")
+            sleep(1)
             await fieutils.send_file(message_obj, "images/Rean_Schwarzer_S-Craft_Summer.png", True)
+            sleep(0.5)
+            await src_channel.send("Haaaaaaaa... zan!\n")
+            sleep(2)
         return character.crafts[craft_chosen-1].damage
 
     async def character_turn(character: Character):
@@ -86,18 +94,27 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             case _:
                 enemy.setCP(enemy.getCP() - enemy.crafts[choice-1].cost)
                 return enemy.crafts[choice-1].damage
+
+    # When the fight is over, reset everyone's stats
+    def reset_everyone(enemy: Enemy, character: Character):
+        character.reset()
+        enemy.reset()
     async def check_victory(enemy: Enemy, character: Character):
         if enemy.getHP() <= 0:
             print(enemy.getHP())
             await src_channel.send("You won!\n")
+
+            # Note: We should reset the stats before the characters gets XP
+            reset_everyone(enemy, character)
             character.setXP(character.getXP() + enemy.getXP())
-            await src_channel.send("XP gained:")
+            await src_channel.send(f"XP gained: {enemy.getXP()}")
             return True
         return False
 
-    async def check_defeat(character: Character):
+    async def check_defeat(character: Character, enemy: Enemy):
         if character.getHP() <= 0:
             await src_channel.send("You lost!\n")
+            reset_everyone(enemy, character)
             return True
         return False
 
@@ -109,7 +126,10 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             return difference
 
     async def start_fight(character: Character, enemy: Enemy):
-        character.initialize_rean()
+        global initialized
+        if not initialized:
+            character.initialize_rean()
+            initialized = True
         while character.HP > 0 and enemy.HP > 0:
             if character.SPD >= enemy.SPD:
 
@@ -128,7 +148,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                 await src_channel.send("Character HP: " + str(character.getHP()) + f" (-{difference})\n")
 
                 # Check if the player is dead
-                if await check_defeat(character):
+                if await check_defeat(character, enemy):
                     return
 
             else:

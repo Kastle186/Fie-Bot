@@ -16,6 +16,7 @@ class Character:
         self.level = level
         self.current_xp = current_xp
         self.crafts = [Craft("Autumn Leaf Cutter", self.STR * 2, 20)]
+        self._initial_state = self.__dict__.copy()
 
     def initialize_rean(self):
         if self.level >= 5:
@@ -96,6 +97,11 @@ class Character:
 
     def calculate_level(self):
         self.level = math.log2(self.current_xp)
+
+    # IMPORTANT: This only works once. A new way has to be found for this
+    def reset(self):
+        # Restore attributes from the initial state
+        self.__dict__ = self._initial_state.copy()
 
 
 
