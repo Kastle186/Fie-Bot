@@ -84,8 +84,15 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             case 4:
                 return 0
 
-    def enemy_turn(enemy: Enemy):
+    async def enemy_turn(enemy: Enemy):
         choice = random.randint(0, 2)
+
+        # Let's let the user know what the enemy used!
+        if choice != 0:
+            await src_channel.send(f"{enemy.get_name()} used {enemy.get_specific_craft(choice-1)}\n")
+        else:
+            await src_channel.send(f"{enemy.get_name()} used a normal attack!\n")
+        sleep(1)
         match choice:
             # Normal Attack
             case 0:
@@ -137,41 +144,44 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                 difference = dif(await character_turn(character) - enemy.getDEF())
                 enemy.setHP(enemy.getHP() - difference)
                 await src_channel.send("Enemy HP: " + str(enemy.getHP()) + f" (-{difference})\n")
+                sleep(1)
 
                 # Check if the enemy is dead
                 if await check_victory(enemy, character):
                     return
 
                 # Enemy attack
-                difference = dif(enemy_turn(enemy) - character.getDEF())
+                difference = dif(await enemy_turn(enemy) - character.getDEF())
                 character.setHP(character.getHP() - difference)
                 await src_channel.send("Character HP: " + str(character.getHP()) + f" (-{difference})\n")
-
+                sleep(1)
                 # Check if the player is dead
                 if await check_defeat(character, enemy):
                     return
 
             else:
                 # Enemy attack
-                difference = dif(enemy_turn(enemy) - character.getDEF())
+                difference = dif(await enemy_turn(enemy) - character.getDEF())
                 character.setHP(character.getHP() - difference)
                 await src_channel.send("Character HP: " + str(character.getHP()) + f" (-{difference})\n")
+                sleep(1)
 
                 # Check if the player is dead
-                if await check_defeat(character):
+                if await check_defeat(character, enemy):
                     return
 
                 # Player attack
                 difference = dif(await character_turn(character) - enemy.getDEF())
                 enemy.setHP(enemy.getHP() - difference)
                 await src_channel.send("Enemy HP: " + str(enemy.getHP()) + f" (-{difference})\n")
+                sleep(1)
 
                 # Check if the enemy is dead
                 if await check_victory(enemy, character):
                     return
 
         await check_victory(enemy, character)
-        await check_defeat(character)
+        await check_defeat(character, enemy)
 
     await start_fight(Rean, Dino)
 

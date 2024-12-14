@@ -19,6 +19,8 @@ class Enemy:
         self.crafts = crafts
         self._initial_state = self.__dict__.copy()
 
+    def get_name(self):
+        return self.name
     def getHP(self):
         return self.HP
 
@@ -50,6 +52,8 @@ class Enemy:
     def getXP(self):
         return self.xp
 
+    def get_specific_craft(self, index: int):
+        return self.crafts[index]
     def get_crafts(self):
         return self.crafts
 
