@@ -283,8 +283,6 @@ async def send_message(
 # Any other utility functions that are not specific to a command or game go here. #
 # ******************************************************************************* #
 
-# NOTE: This should go elsewhere, but I'm done dealing with that stupid circular
-#       import error :skull:
 def fie_response(user_input: str) -> str:
     if user_input == "best girl":
         return "Yeah that's me!"
