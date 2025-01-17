@@ -2,6 +2,7 @@
 
 from actions import Art, Craft
 from dataclasses import dataclass
+from trailsutils import VitalityStats
 
 # Things we might add later on!
 # - Status Ailments
@@ -17,10 +18,7 @@ class Character:
     exp: int
     next_lv_exp: int
 
-    hp: int
-    ep: int
-    cp: int
-
+    vitality: VitalityStats
     stats: CharStats
     equipment: CharEquipment
     crafts: list[Craft]
