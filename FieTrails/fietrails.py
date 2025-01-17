@@ -1,7 +1,6 @@
 # File: fietrails.py
 
 from fieemotes import emote
-from actions import Craft
 
 # WIP: Dictionary to store the functions containing each action functionality.
 #      It will provide us cleaner code than an if-elif-else or even case statements.
@@ -15,9 +14,6 @@ options = {
 
 def test():
     print(emote("BLUSHV"))
-    craft = Craft(name="name", cost=20, damage=10)
-    print(str(craft))
-
 
 # ************************ #
 # DESCRIPTION COMING SOON! #
