@@ -12,13 +12,44 @@ class Element(Enum):
     SPACE = 6
     MIRAGE = 7
 
-@dataclass
-class VitalityStats:
-    health_points: int
-    energy_points: int
-    craft_points: int
+class Stat(Enum):
+    HP  = 1
+    EP  = 2
+    CP  = 3
+    STR = 4
+    DEF = 5
+    ATS = 6
+    ADF = 7
+    SPD = 8
+    DEX = 9
+    AGL = 10
 
-    def __str__(self) -> str:
-        return (f"HP: {self.health_points}\n"
-                f"EP: {self.energy_points}\n"
-                f"CP: {self.craft_points}")
+type StatTuple = tuple[Stat, float]
+type CharStatsMap = dict[Stat, float]
+
+def init_blank_stats() -> CharStatsMap:
+    zero_stats = {
+        Stat.HP:  0,
+        Stat.EP:  0,
+        Stat.CP:  0,
+        Stat.STR: 0,
+        Stat.DEF: 0,
+        Stat.ATS: 0,
+        Stat.ADF: 0,
+        Stat.SPD: 0,
+        Stat.DEX: 0,
+        Stat.AGL: 0
+    }
+    return zero_stats
+
+def char_stats_str(stats: CharStatsMap) -> str:
+    return (f"HP:  {stats[Stat.HP]}\n"
+            f"EP:  {stats[Stat.EP]}\n"
+            f"CP:  {stats[Stat.CP]}\n"
+            f"STR: {stats[Stat.STR]}\n"
+            f"DEF: {stats[Stat.DEF]}\n"
+            f"ATS: {stats[Stat.ATS]}\n"
+            f"ADF: {stats[Stat.ADF]}\n"
+            f"SPD: {stats[Stat.SPD]}\n"
+            f"DEX: {stats[Stat.DEX]}\n"
+            f"AGL: {stats[Stat.AGL]}")
