@@ -336,6 +336,20 @@ def fie_response(user_input: str) -> str:
     if "fie you're a meanie" in user_input:
         return "No u!"
 
+    if "I love you fie" in user_input:
+        return "Thanks! I love myself as well!"
+
+    if any(msg in user_input for msg in
+             ["aaron",
+              "kastle",
+              "kay",
+              "professor",
+              "scooter"]):
+        return "Cool guy!"
+
+    if "demi" in user_input:
+        return "Never heard of him!"
+
     return "<empty>"
 
 
