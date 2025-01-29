@@ -99,8 +99,15 @@ daily_messages = [
         False,
         time(hour=1, tzinfo=UTC),
         ("<@164047938325184512> <:Fie_Claussell:1304860526936985620> "
-         "Are you still awake you son of a gun? Don't you have uni tomorrow? "
-         "Or a life? Get your ass to bed immediately.")
+         "You. Bed. Now. ")
+    ),
+
+    DailyMessage(
+        False,
+        time(hour=22, tzinfo=UTC),
+        ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
+         "Noel here! Have you been taking care of yourself? "
+         f"I will always support you no matter what! {emote("SALUTE")}")
     ),
 ]
 
@@ -358,6 +365,8 @@ async def send_daily_message(client: Client, is_private: bool):
 
     channel1 = client.get_channel(420709830622183434)
     channel2 = client.get_channel(1300997938335580171)
+    channel3 = client.get_channel(1299453968363032760)
+
 
     while not client.is_closed():
         now = datetime.now(UTC).time()
@@ -366,7 +375,12 @@ async def send_daily_message(client: Client, is_private: bool):
         # the index to know when to send to which channel.
         for i in range(0, len(daily_messages)):
             daily_msgobj = daily_messages[i]
-            dest_channel = channel2 if i == 1 else channel1
+            if i == 4:
+                dest_channel = channel3
+            elif i == 1:
+                dest_channel = channel2
+            else:
+                dest_channel = channel1
 
             if not is_ready_to_send(daily_msgobj, now):
                 continue
