@@ -24,26 +24,26 @@ def fie_time(dest_channel_id: int) -> str:
     # there are better approaches to take. And I'm getting a very cool idea but
     # need to cook it more :)
     utc = datetime.now(UTC)
-    azores = utc - timedelta(hours=1)
+    azores = utc - timedelta(hours=0)
 
     if dest_channel_id == 420709830622183434 or dest_channel_id == 420706417721475082:
         costa_rica = utc - timedelta(hours=6)
-        egypt = utc + timedelta(hours=2)
+        egypt = utc + timedelta(hours=3)
         kuwait = utc + timedelta(hours=3)
 
         return (f"Costa Rica (UTC-6): {datetime_to_casual(costa_rica)}\n"
                 f"Azores (UTC-1): {datetime_to_casual(azores)}\n"
-                f"Egypt (UTC+2): {datetime_to_casual(egypt)}\n"
+                f"Egypt (UTC+3): {datetime_to_casual(egypt)}\n"
                 f"Kuwait (UTC+3): {datetime_to_casual(kuwait)}")
 
-    us_west = utc - timedelta(hours=8)
-    us_east = utc - timedelta(hours=5)
+    us_west = utc - timedelta(hours=7)
+    us_east = utc - timedelta(hours=4)
     aus_west = utc + timedelta(hours=8)
-
-    return (f"US West Coast (UTC-8): {datetime_to_casual(us_west)}\n"
-            f"US East Coast (UTC-5): {datetime_to_casual(us_east)}\n"
-            f"Azores (UTC-1): {datetime_to_casual(azores)}\n"
-            f"UK (UTC+0): {datetime_to_casual(utc)}\n"
+    uk = utc + timedelta(hours=1)
+    return (f"US West Coast (UTC-7): {datetime_to_casual(us_west)}\n"
+            f"US East Coast (UTC-4): {datetime_to_casual(us_east)}\n"
+            f"Azores (UTC): {datetime_to_casual(azores)}\n"
+            f"UK (UTC+1): {datetime_to_casual(uk)}\n"
             f"Western Australia (UTC+8): {datetime_to_casual(aus_west)}")
 
 
@@ -120,15 +120,34 @@ def fie_days_until(target_day_msg: str) -> str:
               False: (datetime(today.year + 1, 12, 25) - today).days}) \
               [christmas > today]
 
-        daybreak2 = datetime(2025, 2, 14)
-        until_daybreak2 = (daybreak2 - today).days
+        sky_first = datetime(2025, 9, 25)
+        until_sky_first = (sky_first - today).days
 
-        daybreak2_msg = ({True: "Days until Daybreak II",
-                          False: "Days since Daybreak II's launch"}) \
-                          [daybreak2 > today]
+        kai = datetime(2025, 9, 22)
+        until_kai = (kai - today).days
 
-        days_until_msg = (f"{christmas_msg}: {until_christmas + 1}\n"
-                          f"{daybreak2_msg}: {until_daybreak2 + 1}\n"
+        daybreak2_msg = ({True: "Days until Sky the 1st Remake (Speculative) ",
+                          False: "Days since Sky the 1st Remake (Speculative)"}) \
+                          [sky_first > today]
+
+        kai_msg = ({True: "Days (**at least**) until Beyond the Horizon (Subject to change)",
+                          False: "Days since Sky the 1st Remake (Speculative)"}) \
+            [sky_first > today]
+
+        easter = datetime(today.year, 4, 20)
+        easter_msg = "Days until Easter"
+
+        # If Easter has already passed this year, then Fie will tell how many
+        # days left until next year's Easter.
+        until_easter = \
+            ({True: (easter - today).days,
+              False: (datetime(today.year + 1, 4, 20) - today).days}) \
+                [easter > today]
+
+        days_until_msg = (#f"{christmas_msg}: {until_christmas + 1}\n"
+                          f"{easter_msg}: {until_easter + 1}\n"
+                          f"{daybreak2_msg}: {until_sky_first + 1}\n"
+                          f"{kai_msg}: {until_kai + 1}\n"
                           f"Days until Rean stops being dense: ∞")
     return days_until_msg
 

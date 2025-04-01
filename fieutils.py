@@ -75,21 +75,21 @@ fie_image_files = [
 daily_messages = [
     DailyMessage(
         False,
-        time(hour=23, tzinfo=UTC),
+        time(hour=22, tzinfo=UTC),
         ("<@98491257784909824> have you trained yet? "
          "Laura is expecting you <:Laura_S:1252956467779076106>")
     ),
 
     DailyMessage(
         False,
-        time(hour=19, tzinfo=UTC),
+        time(hour=18, tzinfo=UTC),
         ("<@444271831118249996> it's a bit embarassing to hear how much you "
          f"appreciate me but thanks! I appreciate you too Yuuyuu {emote("GRINV")}")
     ),
 
     DailyMessage(
         False,
-        time(hour=21, tzinfo=UTC),
+        time(hour=20, tzinfo=UTC),
         ("<@145607631149465600> <:Laura_S:1252956467779076106>: "
          "HELLO NANA, HOPE YOU HAD A GOOD DAY! I STILL DON'T KNOW HOW TO "
          "USE MY PHONE VERY WELL. HOPE YOU TAKE CARE OF YOURSELF - LAURA")
@@ -97,14 +97,14 @@ daily_messages = [
 
     DailyMessage(
         False,
-        time(hour=1, tzinfo=UTC),
+        time(hour=0, tzinfo=UTC),
         ("<@164047938325184512> <:Fie_Claussell:1304860526936985620> "
          "You. Bed. Now. ")
     ),
 
     DailyMessage(
         False,
-        time(hour=22, tzinfo=UTC),
+        time(hour=21, tzinfo=UTC),
         ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
          "Noel here! Have you been taking care of yourself? "
          f"I will always support you no matter what! {emote("SALUTE")}")
@@ -207,13 +207,15 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "4th of December - SO (Test)",
-            "9th of December - SO (project due date)",
-            "9th of December - PCO (forum)",
-            "12th of December - SI (Test)",
-            "13th of December - SI (TP)",
-            "18th of December - PCO (Test)",
-            "16th/19th of December - SI (presentation)"
+            "April 9th - TW (Project 1 part II)",
+            "April 10th - RH (Test) ",
+            "April 23rd - SD (Project: Game in execution) ",
+            "May 16th - BD (Project final deadline) ",
+            "May 19th - SD (Test)",
+            "May 20th - BD (Test)",
+            "May 21st - CG (Test) ",
+            "May 28th - CG (Blender Project)",
+            "In Construction..."
         ]
 
         user = await client_obj.fetch_user(164047938325184512)
@@ -334,10 +336,10 @@ def fie_response(user_input: str) -> str:
     #       actual results of games here.
 
     if "fie gsw" in user_input:
-        return "The Warriors are 9-2!"
+        return "The Warriors are 40-29!"
 
     if "fie bulls" in user_input:
-        return "The Bulls are 5-7! :("
+        return "The Bulls are 29-39, but they will show off at the play-in ;)"
 
     # Fie ain't taking blame on being mean ever >:)
     if "fie you're a meanie" in user_input:
@@ -351,12 +353,21 @@ def fie_response(user_input: str) -> str:
               "kastle",
               "kay",
               "professor",
-              "scooter"]):
+              "scooter",
+              "nana",
+              "sovy"]):
         return "Cool guy!"
 
     if "demi" in user_input:
         return "Never heard of him!"
 
+    if "fie p5" in user_input:
+        return ("Maruki's confidant will have to be rank 9 by 11/17 and Akechi will need to be rank 8\n"
+                "Current Progress: Maruki 5, Akechi 5, Kasumi 2\n"
+                "Date: Somewhere in August idk")
+
+    if "fox" in user_input:
+        return "Cool guy! But needs to play trails!"
     return "<empty>"
 
 
