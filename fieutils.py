@@ -23,6 +23,7 @@ import asyncio
 import fiecommands
 import fiegames
 import random
+import re
 
 # Class to store the necessary info to send the daily messages accordingly.
 
@@ -385,7 +386,7 @@ def fie_response(user_input: str) -> str:
     #       actual results of games here.
 
     if "fie gsw" in user_input:
-        return "The Warriors are 46-31!"
+        return "The Warriors are 0-0!"
 
     if "warriors" in user_input:
         return "WARRIORS!"

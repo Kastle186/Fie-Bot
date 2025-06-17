@@ -7,10 +7,12 @@ from pathlib import Path
 import math
 import statistics
 import json
+
 SCORES_FILE = Path("player_scores.json")
 XP_FILE = Path("xp_data.json")
+CHARACTER_PROFILES_FILE = Path("character_profiles.json")
 
-LEVEL_IMAGES = {
+LEVEL_IMAGES_FIE = {
     1: "images/Fie CS I.png",
     2: "images/Fie CS II.png",
     3: "images/Fie CS III.png",
@@ -18,7 +20,30 @@ LEVEL_IMAGES = {
     5: "images/Fie Daybreak.png",
 }
 
-LEVEL_THRESHOLDS = [0, 1000, 2500, 5000, 10000]
+LEVEL_IMAGES_RENNE = {
+    1: "images/Renne SC.png",
+    2: "images/Renne 3rd.png",
+    3: "images/Renne Zero.png",
+    4: "images/Renne Azure.png",
+    5: "images/Renne CS IV.png",
+    6: "images/Renne Daybreak.png",
+    7: "images/Renne Daybreak II.png",
+}
+
+LEVEL_IMAGES_LAURA = {
+    1: "images/Laura CS I.png",
+    2: "images/Laura CS II.png",
+    3: "images/Laura CS III.png",
+    4: "images/Laura Reverie.png",
+}
+
+CHARACTER_LEVEL_IMAGES = {
+    "fie": LEVEL_IMAGES_FIE,
+    "renne": LEVEL_IMAGES_RENNE,
+    "laura": LEVEL_IMAGES_LAURA,
+}
+
+LEVEL_THRESHOLDS = [0, 1000, 2500, 5000, 10000, 15000, 20000]
 
 rank_points = {
     "S": 3,
@@ -145,7 +170,7 @@ def fie_days_until(target_day_msg: str) -> str:
         sky_first = datetime(2025, 9, 19)
         until_sky_first = (sky_first - today).days
 
-        kai = datetime(2025, 10, 31)
+        kai = datetime(2026, 1, 1)
         until_kai = (kai - today).days
 
         sky_1st = ({True: "Days until Sky the 1st Remake",
@@ -273,8 +298,14 @@ def fie_leaderboard() -> str:
 
     return output
 
+def get_character_for_user(user_id: str) -> str:
+    return character_profiles.get(user_id, character_profiles.get("default", "fie"))
+
 def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
-    user = xp_data.get(user_id, {"xp": 0, "level": 1, "image": LEVEL_IMAGES[1]})
+    character = get_character_for_user(user_id)
+    level_images = CHARACTER_LEVEL_IMAGES[character]
+
+    user = xp_data.get(user_id, {"xp": 0, "level": 1, "image": level_images[1]})
     user["xp"] += amount
 
     new_level = user["level"]
@@ -284,14 +315,12 @@ def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
 
     level_up = new_level > user["level"]
     user["level"] = new_level
-    user["image"] = LEVEL_IMAGES.get(new_level, user["image"])
+    user["image"] = level_images.get(new_level, user["image"])
     xp_data[user_id] = user
     save_xp_data(xp_data)
 
     if level_up:
-        message = f"<@{user_id}> leveled up to level {new_level}!"
-        image_path = user["image"]
-        return message, image_path
+        return f"<@{user_id}> leveled up to level {new_level}!", user["image"]
     else:
         return f"<@{user_id}> gained {amount} XP. Current XP: {user['xp']}, Level: {user['level']}"
 
@@ -336,5 +365,13 @@ def save_xp_data(data):
     with open(XP_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
+def load_character_profiles():
+    if CHARACTER_PROFILES_FILE.exists():
+        with open(CHARACTER_PROFILES_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
 player_scores = load_scores()
 xp_data = load_xp_data()
+character_profiles = load_character_profiles()
+
