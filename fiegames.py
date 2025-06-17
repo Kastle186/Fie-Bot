@@ -25,7 +25,9 @@ trails_words = [
 ]
 
 leaderboard_file = 'fie_games_leaderboard.csv'
+leaderboard_talk_file = "fie_talk_leaderboard.csv"
 leaderboard = dict()
+lb_talk = dict()
 
 # ****************************************************************************** #
 # FIE MINI-GAMES:                                                                #
@@ -327,6 +329,22 @@ def update_leaderboard(player: str, score: int, game: int) -> None:
 
     fields = ['Player', 'RPS Score', 'Hangman Score']
     entries = [[key, value[0], value[1]] for key, value in leaderboard.items()]
+
+    # Update leaderboard file.
+    with open(leaderboard_file, mode='w', newline='\n') as the_file:
+        csv_writer = csv.writer(the_file)
+        csv_writer.writerow(fields)
+        csv_writer.writerows(entries)
+
+
+def update_talk_xp(player: str, xp: int) -> None:
+    global lb_talk
+
+    # Update live dictionary object.
+    lb_talk[player] += xp
+
+    fields = ['Player', 'XP']
+    entries = [[key, value[0]] for key, value in lb_talk.items()]
 
     # Update leaderboard file.
     with open(leaderboard_file, mode='w', newline='\n') as the_file:

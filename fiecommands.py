@@ -2,9 +2,31 @@
 
 from datetime import datetime, timedelta, UTC
 from fieemotes import emote
+from pathlib import Path
 
 import math
 import statistics
+import json
+SCORES_FILE = Path("player_scores.json")
+XP_FILE = Path("xp_data.json")
+
+LEVEL_IMAGES = {
+    1: "images/Fie CS I.png",
+    2: "images/Fie CS II.png",
+    3: "images/Fie CS III.png",
+    4: "images/Fie Reverie.png",
+    5: "images/Fie Daybreak.png",
+}
+
+LEVEL_THRESHOLDS = [0, 1000, 2500, 5000, 10000]
+
+rank_points = {
+    "S": 3,
+    "A": 3,
+    "B": 2,
+    "C": 1
+}
+
 
 # ********************************************************************************* #
 # FIE UTILITIES FUNCTIONS:                                                          #
@@ -120,18 +142,18 @@ def fie_days_until(target_day_msg: str) -> str:
               False: (datetime(today.year + 1, 12, 25) - today).days}) \
               [christmas > today]
 
-        sky_first = datetime(2025, 9, 25)
+        sky_first = datetime(2025, 9, 19)
         until_sky_first = (sky_first - today).days
 
-        kai = datetime(2025, 9, 22)
+        kai = datetime(2025, 10, 31)
         until_kai = (kai - today).days
 
-        daybreak2_msg = ({True: "Days until Sky the 1st Remake (Speculative) ",
-                          False: "Days since Sky the 1st Remake (Speculative)"}) \
+        sky_1st = ({True: "Days until Sky the 1st Remake",
+                          False: "Days since Sky the 1st Remake"}) \
                           [sky_first > today]
 
         kai_msg = ({True: "Days (**at least**) until Beyond the Horizon (Subject to change)",
-                          False: "Days since Sky the 1st Remake (Speculative)"}) \
+                          False: "Days since Sky the 1st Remake "}) \
             [sky_first > today]
 
         easter = datetime(today.year, 4, 20)
@@ -145,8 +167,8 @@ def fie_days_until(target_day_msg: str) -> str:
                 [easter > today]
 
         days_until_msg = (#f"{christmas_msg}: {until_christmas + 1}\n"
-                          f"{easter_msg}: {until_easter + 1}\n"
-                          f"{daybreak2_msg}: {until_sky_first + 1}\n"
+                          #f"{easter_msg}: {until_easter + 1}\n"
+                          f"{sky_1st}: {until_sky_first + 1}\n"
                           f"{kai_msg}: {until_kai + 1}\n"
                           f"Days until Rean stops being dense: ∞")
     return days_until_msg
@@ -178,6 +200,114 @@ def fie_what_is(question_msg: str) -> str:
     return fun_fact
 
 
+def fie_scores(message: str) -> str:
+    VALID_MAP_LINKS = {
+        "https://osu.ppy.sh/beatmapsets/1148570#fruits/2397952",
+        "https://osu.ppy.sh/beatmapsets/1794214#fruits/3677233",
+        "https://osu.ppy.sh/beatmapsets/1789437#fruits/3666577",
+        "https://osu.ppy.sh/beatmapsets/1493146#fruits/3060693",
+        "https://osu.ppy.sh/beatmapsets/1388177#fruits/2866964",
+        "https://osu.ppy.sh/beatmapsets/1688341#fruits/3450339",
+        "https://osu.ppy.sh/beatmapsets/1693907#fruits/3461274",
+        "https://osu.ppy.sh/beatmapsets/779608#fruits/1637120",
+        "https://osu.ppy.sh/beatmapsets/1723219#fruits/3521814",
+        "https://osu.ppy.sh/beatmapsets/1776740#fruits/3638586",
+        "https://osu.ppy.sh/beatmapsets/941899#fruits/1966809",
+        "https://osu.ppy.sh/beatmapsets/1753057#fruits/3587544",
+        "https://osu.ppy.sh/beatmapsets/1174853#fruits/2450533",
+        "https://osu.ppy.sh/beatmapsets/1460413#fruits/3000775",
+        "https://osu.ppy.sh/beatmapsets/1550926#fruits/3169318",
+        "https://osu.ppy.sh/beatmapsets/1234494#fruits/2566257",
+        "https://osu.ppy.sh/beatmapsets/1406206#fruits/2899706",
+        "https://osu.ppy.sh/beatmapsets/1746675#fruits/3572726",
+        "https://osu.ppy.sh/beatmapsets/1712961#fruits/3500160",
+        "https://osu.ppy.sh/beatmapsets/945848#fruits/1975026",
+        "https://osu.ppy.sh/beatmapsets/534978#fruits/1133219",
+        "https://osu.ppy.sh/beatmapsets/1037471#fruits/2169000",
+        "https://osu.ppy.sh/beatmapsets/1479835#fruits/3035752",
+    }
+
+    tokens = message.split()
+
+    if len(tokens) < 5:
+        return "Hey dummy, use it like this: fie scores [player] [map_link] [rank]"
+
+    player = tokens[2].lower()
+    map_link = tokens[3]
+    rank = tokens[4].upper()
+
+    if map_link not in VALID_MAP_LINKS:
+        return f"That map isn’t part of the challenge! Caught you cheating huh?"
+
+    if rank not in rank_points:
+        return f"I don't know what {rank} is meant to be but it isn't a valid rank (use S, A, B or C)"
+
+    if player not in player_scores:
+        player_scores[player] = {}
+
+    previous_rank = player_scores[player].get(map_link)
+    player_scores[player][map_link] = rank
+
+    save_scores(player_scores)
+
+    if previous_rank:
+        return f"{player} updated score on {map_link} from {previous_rank} to {rank}"
+    else:
+        return f"{player} submitted {rank} for {map_link}"
+
+def fie_leaderboard() -> str:
+    leaderboard = {}
+
+    for player, maps in player_scores.items():
+        total = sum(rank_points[rank] for rank in maps.values())
+        leaderboard[player] = total
+
+    sorted_board = sorted(leaderboard.items(), key=lambda x: x[1], reverse=True)
+
+    if not sorted_board:
+        return "No scores yet! Go play something!!"
+
+    output = "**Leaderboard:**\n"
+    for i, (player, score) in enumerate(sorted_board, start=1):
+        output += f"{i}. {player} - {score} points\n"
+
+    return output
+
+def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
+    user = xp_data.get(user_id, {"xp": 0, "level": 1, "image": LEVEL_IMAGES[1]})
+    user["xp"] += amount
+
+    new_level = user["level"]
+    for i, threshold in enumerate(LEVEL_THRESHOLDS):
+        if user["xp"] >= threshold:
+            new_level = i + 1
+
+    level_up = new_level > user["level"]
+    user["level"] = new_level
+    user["image"] = LEVEL_IMAGES.get(new_level, user["image"])
+    xp_data[user_id] = user
+    save_xp_data(xp_data)
+
+    if level_up:
+        message = f"<@{user_id}> leveled up to level {new_level}!"
+        image_path = user["image"]
+        return message, image_path
+    else:
+        return f"<@{user_id}> gained {amount} XP. Current XP: {user['xp']}, Level: {user['level']}"
+
+def fie_level(user_id: str, user_name: str) -> tuple[str, str] | str:
+    user = xp_data.get(user_id)
+
+    if not user:
+        return f"{user_name} hasn't gained any XP yet."
+
+    level_text = f"{user_name} is Level {user['level']} with {user['xp']} XP!"
+    image_path = user["image"]
+    return (level_text, image_path)
+
+
+
+
 # **************************************************** #
 # OTHER COMMAND UTILITIES:                             #
 # Any other helper functions for the commands go here! #
@@ -186,3 +316,25 @@ def fie_what_is(question_msg: str) -> str:
 def datetime_to_casual(input_dt: datetime) -> str:
     return input_dt.strftime("%H:%M:%S")
 
+def load_scores():
+    if SCORES_FILE.exists():
+        with open(SCORES_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_scores(data):
+    with open(SCORES_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+def load_xp_data():
+    if XP_FILE.exists():
+        with open(XP_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_xp_data(data):
+    with open(XP_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+player_scores = load_scores()
+xp_data = load_xp_data()

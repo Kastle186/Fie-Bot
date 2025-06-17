@@ -15,7 +15,7 @@ from discord import (
 
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, time, UTC
+from datetime import datetime, time, UTC, timedelta
 from fieemotes import emote
 from typing import TypeAlias, Union
 
@@ -62,7 +62,13 @@ fie_image_files = [
     "images/cute fie.png",
     "images/fie bye bye.png",
     "images/fie (and laura).png",
-    "images/ValentineKuro.png"
+    "images/ValentineKuro.png",
+    "images/Fie CSI.png",
+    "images/Fie CSII.png",
+    "images/Fie CSIII.png",
+    "images/Fie CSIV.png",
+    "images/Fie Reverie.png",
+    "images/Fie Daybreak.png",
 ]
 
 # List of daily messages and their info to send them.
@@ -102,13 +108,13 @@ daily_messages = [
          "You. Bed. Now. ")
     ),
 
-    DailyMessage(
-        False,
-        time(hour=21, tzinfo=UTC),
-        ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
-         "Noel here! Have you been taking care of yourself? "
-         f"I will always support you no matter what! {emote("SALUTE")}")
-    ),
+    #DailyMessage(
+     #   False,
+      #  time(hour=21, tzinfo=UTC),
+       # ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
+        # "Noel here! Have you been taking care of yourself? "
+         #f"I will always support you no matter what! {emote("SALUTE")}")
+    #),
 ]
 
 # The running gag is about Fie chiming in whenever two people post the same message
@@ -156,6 +162,19 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     if not fie_res == "<empty>":
         await send_text(message_obj, fie_res, is_private)
 
+    # Skip bot messages
+    if message_obj.author.bot:
+        return
+
+    # AUTO XP GAIN
+    user_id = str(message_obj.author.id)
+    xp_result = fiecommands.add_xp(user_id, 10)  # Add 10 XP per message
+
+    # Send level-up messages to a specific channel
+    if "leveled up" in xp_result[0]:
+        await send_text(message_obj.channel, xp_result[0], is_private=False)
+        await send_file(message_obj, xp_result[1], is_private=False)
+
     # #################################### #
     # Commands triggered by one word only. #
     # #################################### #
@@ -191,6 +210,35 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         fun_fact = fiecommands.fie_what_is(message)
         await send_text(message_obj, fun_fact, is_private)
 
+    elif "fie scores" in message:
+        scores = fiecommands.fie_scores(message)
+        await send_text(message_obj, scores, is_private)
+
+    elif "fie leaderboard" in message:
+        osu_lb = fiecommands.fie_leaderboard()
+        await send_text(message_obj, osu_lb, is_private)
+
+
+    elif "fie level" in message:
+
+        user_id = str(message_obj.author.id)
+
+        user_name = message_obj.author.display_name
+
+        level_info = fiecommands.fie_level(user_id, user_name)
+
+        if isinstance(level_info, tuple):
+
+            text, image_path = level_info
+
+            await send_text(message_obj, text, is_private)
+
+            await send_file(message_obj, image_path, is_private)
+
+        else:
+
+            await send_text(message_obj, level_info, is_private)
+
     # ################################################## #
     # Commands triggered by a phrase in a message: Games #
     # ################################################## #
@@ -207,15 +255,14 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "April 9th - TW (Project 1 part II)",
-            "April 10th - RH (Test) ",
-            "April 23rd - SD (Project: Game in execution) ",
-            "May 16th - BD (Project final deadline) ",
-            "May 19th - SD (Test)",
-            "May 20th - BD (Test)",
-            "May 21st - CG (Test) ",
-            "May 28th - CG (Blender Project)",
-            "In Construction..."
+            "19 de Maio - SD (Teste)",
+            "20 de Maio - BD (Teste)",
+            "21 de Maio - CG (Teste) ",
+            "23 de Maio - BD (Trabalho)",
+            "26 de Maio - TW (Trabalho)",
+            "27 de Maio - TW (Teste)",
+            "28 de Maio - CG (Blender)",
+            "28 de Maio - SD (Trabalho)"
         ]
 
         user = await client_obj.fetch_user(164047938325184512)
@@ -235,6 +282,8 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     if is_repeated_msg(last_messages):
         await send_text(message_obj, last_messages[1][0], is_private)
+
+
 
 
 # ******************************************************************************** #
@@ -336,10 +385,16 @@ def fie_response(user_input: str) -> str:
     #       actual results of games here.
 
     if "fie gsw" in user_input:
-        return "The Warriors are 40-29!"
+        return "The Warriors are 46-31!"
+
+    if "warriors" in user_input:
+        return "WARRIORS!"
 
     if "fie bulls" in user_input:
         return "The Bulls are 29-39, but they will show off at the play-in ;)"
+
+    if "nekotina" in user_input:
+        return "Can you SHUT THE FUCK UP @nekotina"
 
     # Fie ain't taking blame on being mean ever >:)
     if "fie you're a meanie" in user_input:
@@ -347,6 +402,9 @@ def fie_response(user_input: str) -> str:
 
     if "I love you fie" in user_input:
         return "Thanks! I love myself as well!"
+
+    if "onana" in user_input:
+        return "Get this trash GK out of United ASAP"
 
     if any(msg in user_input for msg in
              ["aaron",
@@ -360,11 +418,6 @@ def fie_response(user_input: str) -> str:
 
     if "demi" in user_input:
         return "Never heard of him!"
-
-    if "fie p5" in user_input:
-        return ("Maruki's confidant will have to be rank 9 by 11/17 and Akechi will need to be rank 8\n"
-                "Current Progress: Maruki 5, Akechi 5, Kasumi 2\n"
-                "Date: Somewhere in August idk")
 
     if "fox" in user_input:
         return "Cool guy! But needs to play trails!"
@@ -421,3 +474,5 @@ def is_repeated_msg(msg_history: deque) -> bool:
     # first, and the author second. So, to define whether a message is repeated,
     # we have to check for same content but different author.
     return msg1[0] == msg2[0] and msg1[1] != msg2[1]
+
+
