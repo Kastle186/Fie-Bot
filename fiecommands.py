@@ -37,10 +37,29 @@ LEVEL_IMAGES_LAURA = {
     4: "images/Laura Reverie.png",
 }
 
+LEVEL_IMAGES_REAN = {
+    1: "images/Rean CS I.png",
+    2: "images/Rean CS II.png",
+    3: "images/Rean CS III.png",
+    4: "images/Rean CS IV.png",
+    5: "images/Rean Reverie.png",
+    6: "images/Rean Kai.png",
+}
+
+LEVEL_IMAGES_EMMA = {
+    1: "images/Emma CS I.png",
+    2: "images/Emma CS II.png",
+    3: "images/Emma CS III.png",
+    4: "images/Emma CS IV.png",
+    5: "images/Emma Reverie.png",
+}
+
 CHARACTER_LEVEL_IMAGES = {
     "fie": LEVEL_IMAGES_FIE,
     "renne": LEVEL_IMAGES_RENNE,
     "laura": LEVEL_IMAGES_LAURA,
+    "rean": LEVEL_IMAGES_REAN,
+    "emma": LEVEL_IMAGES_EMMA,
 }
 
 LEVEL_THRESHOLDS = [0, 1000, 2500, 5000, 10000, 15000, 20000]
