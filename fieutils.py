@@ -240,6 +240,18 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
             await send_text(message_obj, level_info, is_private)
 
+    elif message.startswith("fie switch character"):
+        tokens = message.split()
+        if len(tokens) >= 4:
+            new_char = tokens[3].capitalize()
+            switch_msg = fiecommands.fie_switch_character(user_id, new_char)
+            await send_text(message_obj.channel, switch_msg, is_private)
+
+    elif message == "fie characters":
+        char_list = fiecommands.fie_characters(user_id, message_obj.author.display_name)
+        await send_text(message_obj, char_list, is_private)
+
+
     # ################################################## #
     # Commands triggered by a phrase in a message: Games #
     # ################################################## #

@@ -12,55 +12,48 @@ SCORES_FILE = Path("player_scores.json")
 XP_FILE = Path("xp_data.json")
 CHARACTER_PROFILES_FILE = Path("character_profiles.json")
 
-LEVEL_IMAGES_FIE = {
-    1: "images/Fie CS I.png",
-    2: "images/Fie CS II.png",
-    3: "images/Fie CS III.png",
-    4: "images/Fie Reverie.png",
-    5: "images/Fie Daybreak.png",
-}
 
-LEVEL_IMAGES_RENNE = {
-    1: "images/Renne SC.png",
-    2: "images/Renne 3rd.png",
-    3: "images/Renne Zero.png",
-    4: "images/Renne Azure.png",
-    5: "images/Renne CS IV.png",
-    6: "images/Renne Daybreak.png",
-    7: "images/Renne Daybreak II.png",
-}
-
-LEVEL_IMAGES_LAURA = {
-    1: "images/Laura CS I.png",
-    2: "images/Laura CS II.png",
-    3: "images/Laura CS III.png",
-    4: "images/Laura Reverie.png",
-}
-
-LEVEL_IMAGES_REAN = {
-    1: "images/Rean CS I.png",
-    2: "images/Rean CS II.png",
-    3: "images/Rean CS III.png",
-    4: "images/Rean CS IV.png",
-    5: "images/Rean Reverie.png",
-    6: "images/Rean Kai.png",
-}
-
-LEVEL_IMAGES_EMMA = {
-    1: "images/Emma CS I.png",
-    2: "images/Emma CS II.png",
-    3: "images/Emma CS III.png",
-    4: "images/Emma CS IV.png",
-    5: "images/Emma Reverie.png",
-}
 
 CHARACTER_LEVEL_IMAGES = {
-    "fie": LEVEL_IMAGES_FIE,
-    "renne": LEVEL_IMAGES_RENNE,
-    "laura": LEVEL_IMAGES_LAURA,
-    "rean": LEVEL_IMAGES_REAN,
-    "emma": LEVEL_IMAGES_EMMA,
+    "fie": {
+        1: "images/Fie CS I.png",
+        2: "images/Fie CS II.png",
+        3: "images/Fie CS III.png",
+        4: "images/Fie Reverie.png",
+        5: "images/Fie Daybreak.png",
+    },
+    "renne": {
+        1: "images/Renne SC.png",
+        2: "images/Renne 3rd.png",
+        3: "images/Renne Zero.png",
+        4: "images/Renne Azure.png",
+        5: "images/Renne CS IV.png",
+        6: "images/Renne Daybreak.png",
+        7: "images/Renne Daybreak II.png",
+    },
+    "laura": {
+        1: "images/Laura CS I.png",
+        2: "images/Laura CS II.png",
+        3: "images/Laura CS III.png",
+        4: "images/Laura Reverie.png",
+    },
+    "rean": {
+        1: "images/Rean CS I.png",
+        2: "images/Rean CS II.png",
+        3: "images/Rean CS III.png",
+        4: "images/Rean CS IV.png",
+        5: "images/Rean Reverie.png",
+        6: "images/Rean Kai.png",
+    },
+    "emma": {
+        1: "images/Emma CS I.png",
+        2: "images/Emma CS II.png",
+        3: "images/Emma CS III.png",
+        4: "images/Emma CS IV.png",
+        5: "images/Emma Reverie.png",
+    }
 }
+
 
 LEVEL_THRESHOLDS = [0, 1000, 2500, 5000, 10000, 15000, 20000]
 
@@ -321,37 +314,108 @@ def get_character_for_user(user_id: str) -> str:
     return character_profiles.get(user_id, character_profiles.get("default", "fie"))
 
 def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
-    character = get_character_for_user(user_id)
-    level_images = CHARACTER_LEVEL_IMAGES[character]
+    char_name = get_character_for_user(user_id)
+    level_images = CHARACTER_LEVEL_IMAGES.get(char_name)
 
-    user = xp_data.get(user_id, {"xp": 0, "level": 1, "image": level_images[1]})
-    user["xp"] += amount
+    if not level_images:
+        return f"{char_name} doesn't have any level images configured."
 
-    new_level = user["level"]
+    max_level = len(level_images)
+
+    user = xp_data.get(user_id, {
+        "characters": {},
+        "maxed_characters": [],
+        "current_character": char_name
+    })
+
+    characters = user.get("characters", {})
+    char_data = characters.get(char_name, {
+        "xp": 0,
+        "level": 1,
+        "image": level_images[1]
+    })
+
+    # Add XP
+    char_data["xp"] += amount
+
+    # Determine new level
+    new_level = char_data["level"]
     for i, threshold in enumerate(LEVEL_THRESHOLDS):
-        if user["xp"] >= threshold:
+        if char_data["xp"] >= threshold:
             new_level = i + 1
+    new_level = min(new_level, max_level)
 
-    level_up = new_level > user["level"]
-    user["level"] = new_level
-    user["image"] = level_images.get(new_level, user["image"])
+    level_up = new_level > char_data["level"]
+    char_data["level"] = new_level
+    char_data["image"] = level_images.get(new_level, char_data["image"])
+    characters[char_name] = char_data
+
+    # Update maxed character list if needed
+    if new_level == max_level and char_name not in user.get("maxed_characters", []):
+        user.setdefault("maxed_characters", []).append(char_name)
+
+    user.pop("xp", None)
+    user.pop("level", None)
+    user.pop("image", None)
+
+    # Save updates
+    user["characters"] = characters
+    user["current_character"] = char_name
     xp_data[user_id] = user
     save_xp_data(xp_data)
 
     if level_up:
-        return f"<@{user_id}> leveled up to level {new_level}!", user["image"]
+        return f"<@{user_id}> leveled up {char_name.capitalize()} to level {new_level}! {emote('PARTY')}", char_data["image"]
     else:
-        return f"<@{user_id}> gained {amount} XP. Current XP: {user['xp']}, Level: {user['level']}"
+        return f"<@{user_id}> gained {amount} XP for {char_name.capitalize()}. Now at {char_data['xp']} XP, Level {char_data['level']}"
+
 
 def fie_level(user_id: str, user_name: str) -> tuple[str, str] | str:
     user = xp_data.get(user_id)
 
-    if not user:
-        return f"{user_name} hasn't gained any XP yet."
+    if not user or "current_character" not in user:
+        return f"{user_name} hasn't selected a character yet."
 
-    level_text = f"{user_name} is Level {user['level']} with {user['xp']} XP!"
-    image_path = user["image"]
-    return (level_text, image_path)
+    char_name = user["current_character"]
+    char_data = user.get("characters", {}).get(char_name)
+
+    if not char_data:
+        return f"{user_name} hasn't gained any XP for {char_name.capitalize()} yet."
+
+    level_text = f"{user_name} is Level {char_data['level']} with {char_data['xp']} XP using {char_name.capitalize()}!"
+
+    if user.get("maxed_characters"):
+        maxed = ", ".join(name.capitalize() for name in user["maxed_characters"])
+        level_text += f"\n**Maxed characters:** {maxed}"
+
+    return (level_text, char_data["image"])
+
+def fie_switch_character(user_id: str, new_character: str) -> str:
+    new_character = new_character.lower()
+    if new_character not in CHARACTER_LEVEL_IMAGES:
+        return f"I don't know who '{new_character}' is..."
+
+    character_profiles[user_id] = new_character
+    with open(CHARACTER_PROFILES_FILE, "w") as f:
+        json.dump(character_profiles, f, indent=2)
+
+    return f"Switched active character to {new_character.capitalize()}!"
+
+def fie_characters(user_id: str, user_name: str) -> str:
+    user = xp_data.get(user_id)
+    if not user or not user.get("characters"):
+        return f"{user_name} hasn’t leveled any characters yet."
+
+    output = f"**{user_name}'s characters:**\n"
+    for char, data in user["characters"].items():
+        output += f"- {char.capitalize()}: Level {data['level']} ({data['xp']} XP)\n"
+
+    if user.get("maxed_characters"):
+        maxed = ", ".join(c.capitalize() for c in user["maxed_characters"])
+        output += f"\n**Maxed:** {maxed}"
+
+    return output
+
 
 
 
