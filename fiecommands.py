@@ -365,7 +365,7 @@ def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
     save_xp_data(xp_data)
 
     if level_up:
-        return f"<@{user_id}> leveled up {char_name.capitalize()} to level {new_level}! {emote('PARTY')}", char_data["image"]
+        return f"<@{user_id}> leveled up {char_name.capitalize()} to level {new_level}! ", char_data["image"]
     else:
         return f"<@{user_id}> gained {amount} XP for {char_name.capitalize()}. Now at {char_data['xp']} XP, Level {char_data['level']}"
 
@@ -382,7 +382,7 @@ def fie_level(user_id: str, user_name: str) -> tuple[str, str] | str:
     if not char_data:
         return f"{user_name} hasn't gained any XP for {char_name.capitalize()} yet."
 
-    level_text = f"{user_name} is Level {char_data['level']} with {char_data['xp']} XP using {char_name.capitalize()}!"
+    level_text = f"{user_name} is Level {char_data['level']} having {char_data['xp']} XP with {char_name.capitalize()}!"
 
     if user.get("maxed_characters"):
         maxed = ", ".join(name.capitalize() for name in user["maxed_characters"])
