@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, UTC
 from fieemotes import emote
-from fieconstants import CHARACTER_LEVEL_IMAGES, LEVEL_THRESHOLDS, rank_points
+from fieconstants import CHARACTER_LEVEL_IMAGES, LEVEL_THRESHOLDS, rank_points, WHITELISTED_USERS
 from pathlib import Path
 
 import math
@@ -263,7 +263,10 @@ def fie_leaderboard() -> str:
 def get_character_for_user(user_id: str) -> str:
     return character_profiles.get(user_id, character_profiles.get("default", "fie"))
 
-def add_xp(user_id: str, amount: int) -> tuple[str, str] | str:
+def add_xp(user_id: str, amount: int) -> tuple[str, str] | str | None:
+    if user_id not in WHITELISTED_USERS:
+        return None  # Skip XP processing entirely
+
     char_name = get_character_for_user(user_id)
     level_images = CHARACTER_LEVEL_IMAGES.get(char_name)
 

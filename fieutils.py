@@ -171,8 +171,11 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     user_id = str(message_obj.author.id)
     xp_result = fiecommands.add_xp(user_id, 10)  # Add 10 XP per message
 
+    if xp_result is None:
+        pass  # Not whitelisted
+
     # Send level-up messages to a specific channel
-    if "leveled up" in xp_result[0]:
+    elif "leveled up" in xp_result[0]:
         await send_text(message_obj.channel, xp_result[0], is_private=False)
         await send_file(message_obj, xp_result[1], is_private=False)
 
