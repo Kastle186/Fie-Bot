@@ -262,8 +262,11 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
 
         # We received a wrong guess of the full word.
         else:
-            await src_channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
-            lives -= 1
+            if next_guess not in trails_words:
+                await src_channel.send("That word isn't in the database!")
+            else:
+                await src_channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
+                lives -= 1
 
     if has_guessed:
         # Add the score of this victory to this player's leaderboard entry.
