@@ -40,6 +40,14 @@ fiegreetings = [
     "Ja!",
     "Sylphid at your service!"]
 
+# If fie is mentioned and nothing of the above is
+
+fiereactions = [
+    "Come again?",
+    "Wanna run that by me again?",
+    "If something broke blame <@164047938325184512>"
+]
+
 # List of commands with a brief explanation on how they work.
 
 fiehelp = ("'fie rps' -> Play rock/paper/scissors with yours truly\n"
@@ -134,6 +142,9 @@ DiscordChannelType: TypeAlias = Union[
 
 def sylphid_greeting() -> str:
     return random.choice(fiegreetings)
+
+def sylphid_reaction() -> str:
+    return random.choice(fiereactions)
 
 def help_msg():
     return f"What a pain... here are the commands you can use:\n{fiehelp}"
@@ -264,6 +275,9 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
+
+    elif f"fie wordle" in message:
+        await fiegames.fie_wordle(client_obj, message_obj, "tizzy")
 
     # ################################### #
     # Demi's own command for his schedule #
@@ -403,40 +417,48 @@ def fie_response(user_input: str) -> str:
     if "fie gsw" in user_input:
         return "The Warriors are 0-0!"
 
-    if "warriors" in user_input:
+    elif "warriors" in user_input:
         return "WARRIORS!"
 
-    if "fie bulls" in user_input:
+    elif "fie bulls" in user_input:
         return "The Bulls are 29-39, but they will show off at the play-in ;)"
 
-    if "nekotina" in user_input:
+    elif "nekotina" in user_input:
         return "Can you SHUT THE FUCK UP @nekotina"
 
     # Fie ain't taking blame on being mean ever >:)
-    if "fie you're a meanie" in user_input:
+    elif "fie you're a meanie" in user_input:
         return "No u!"
 
-    if "I love you fie" in user_input:
+    elif "I love you fie" in user_input:
         return "Thanks! I love myself as well!"
 
-    if "onana" in user_input:
+    elif "onana" in user_input:
         return "Get this trash GK out of United ASAP"
 
-    if any(msg in user_input for msg in
+    elif any(msg in user_input for msg in
              ["aaron",
               "kastle",
               "kay",
               "professor",
               "scooter",
               "nana",
-              "sovy"]):
+              "sovy",
+              "hase",
+              "hiro",
+              "tartaruga",
+              ]):
         return "Cool guy!"
 
-    if "demi" in user_input:
+    elif "demi" in user_input:
         return "Never heard of him!"
 
-    if "fox" in user_input:
+    elif "fox" in user_input:
         return "Cool guy! But needs to play trails!"
+
+    #elif "fie" in user_input:
+        #return sylphid_reaction()
+
     return "<empty>"
 
 

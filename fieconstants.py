@@ -59,3 +59,29 @@ WHITELISTED_USERS = {
     "812099925600501882", # Kastle
     "171448536792170496" # Ze_Mighty_Muffin
 }
+
+VALID_MAP_LINKS = {
+        "https://osu.ppy.sh/beatmapsets/1148570#fruits/2397952",
+        "https://osu.ppy.sh/beatmapsets/1794214#fruits/3677233",
+        "https://osu.ppy.sh/beatmapsets/1789437#fruits/3666577",
+        "https://osu.ppy.sh/beatmapsets/1493146#fruits/3060693",
+        "https://osu.ppy.sh/beatmapsets/1388177#fruits/2866964",
+        "https://osu.ppy.sh/beatmapsets/1688341#fruits/3450339",
+        "https://osu.ppy.sh/beatmapsets/1693907#fruits/3461274",
+        "https://osu.ppy.sh/beatmapsets/779608#fruits/1637120",
+        "https://osu.ppy.sh/beatmapsets/1723219#fruits/3521814",
+        "https://osu.ppy.sh/beatmapsets/1776740#fruits/3638586",
+        "https://osu.ppy.sh/beatmapsets/941899#fruits/1966809",
+        "https://osu.ppy.sh/beatmapsets/1753057#fruits/3587544",
+        "https://osu.ppy.sh/beatmapsets/1174853#fruits/2450533",
+        "https://osu.ppy.sh/beatmapsets/1460413#fruits/3000775",
+        "https://osu.ppy.sh/beatmapsets/1550926#fruits/3169318",
+        "https://osu.ppy.sh/beatmapsets/1234494#fruits/2566257",
+        "https://osu.ppy.sh/beatmapsets/1406206#fruits/2899706",
+        "https://osu.ppy.sh/beatmapsets/1746675#fruits/3572726",
+        "https://osu.ppy.sh/beatmapsets/1712961#fruits/3500160",
+        "https://osu.ppy.sh/beatmapsets/945848#fruits/1975026",
+        "https://osu.ppy.sh/beatmapsets/534978#fruits/1133219",
+        "https://osu.ppy.sh/beatmapsets/1037471#fruits/2169000",
+        "https://osu.ppy.sh/beatmapsets/1479835#fruits/3035752",
+    }
