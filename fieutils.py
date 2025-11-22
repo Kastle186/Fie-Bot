@@ -75,7 +75,6 @@ fie_image_files = [
     "images/Fie CSI.png",
     "images/Fie CSII.png",
     "images/Fie CSIII.png",
-    "images/Fie CSIV.png",
     "images/Fie Reverie.png",
     "images/Fie Daybreak.png",
 ]
@@ -90,21 +89,21 @@ fie_image_files = [
 daily_messages = [
     DailyMessage(
         False,
-        time(hour=22, tzinfo=UTC),
+        time(hour=23, tzinfo=UTC),
         ("<@98491257784909824> have you trained yet? "
          "Laura is expecting you <:Laura_S:1252956467779076106>")
     ),
 
     DailyMessage(
         False,
-        time(hour=18, tzinfo=UTC),
+        time(hour=19, tzinfo=UTC),
         ("<@444271831118249996> it's a bit embarassing to hear how much you "
          f"appreciate me but thanks! I appreciate you too Yuuyuu {emote("GRINV")}")
     ),
 
     DailyMessage(
         False,
-        time(hour=20, tzinfo=UTC),
+        time(hour=21, tzinfo=UTC),
         ("<@145607631149465600> <:Laura_S:1252956467779076106>: "
          "HELLO NANA, HOPE YOU HAD A GOOD DAY! I STILL DON'T KNOW HOW TO "
          "USE MY PHONE VERY WELL. HOPE YOU TAKE CARE OF YOURSELF - LAURA")
@@ -112,7 +111,7 @@ daily_messages = [
 
     DailyMessage(
         False,
-        time(hour=0, tzinfo=UTC),
+        time(hour=1, tzinfo=UTC),
         ("<@164047938325184512> <:Fie_Claussell:1304860526936985620> "
          "You. Bed. Now. ")
     ),
@@ -233,7 +232,6 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         osu_lb = fiecommands.fie_leaderboard()
         await send_text(message_obj, osu_lb, is_private)
 
-
     elif "fie level" in message:
 
         user_id = str(message_obj.author.id)
@@ -266,6 +264,24 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         await send_text(message_obj, char_list, is_private)
 
 
+    elif message_obj.content.lower().startswith("fie football"):
+
+        # Split the command into parts
+
+        parts = message_obj.content.lower().split(maxsplit=2)
+
+        if len(parts) < 3:
+            await send_text(message_obj, "Please include a team name, e.g. `fie football manchester united`.",
+                            is_private)
+            return
+
+        team_name = parts[2]
+
+        matches = fiecommands.fie_football(team_name)
+
+        await send_text(message_obj, matches, is_private)
+
+
     # ################################################## #
     # Commands triggered by a phrase in a message: Games #
     # ################################################## #
@@ -276,8 +292,8 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
 
-    elif f"fie wordle" in message:
-        await fiegames.fie_wordle(client_obj, message_obj, "tizzy")
+    elif "fie wordle" in message:
+        await fiegames.fie_wordle(client_obj, message_obj, "chirp")
 
     # ################################### #
     # Demi's own command for his schedule #
@@ -285,14 +301,16 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "19 de Maio - SD (Teste)",
-            "20 de Maio - BD (Teste)",
-            "21 de Maio - CG (Teste) ",
-            "23 de Maio - BD (Trabalho)",
-            "26 de Maio - TW (Trabalho)",
-            "27 de Maio - TW (Teste)",
-            "28 de Maio - CG (Blender)",
-            "28 de Maio - SD (Trabalho)"
+            "14 de outubro - ES (Projeto 2)",
+            "29 de outubro - LCD (Miniteste 2)",
+            "27 de outubro - ES (Teste)",
+            "4 de novembro - ES (Projeto 3)",
+            "12 de novembro - LCD (Miniteste 3)",
+            "5 de dezembro - LCD (Miniteste 4)",
+            "15 de dezembro - PW (Teste)",
+            "17 de dezembro - ES (Teste)",
+            "22 de  dezembro - LCD (Entre final Projeto)"
+            "9 de janeiro - ES (Projeto 4)",
         ]
 
         user = await client_obj.fetch_user(164047938325184512)
@@ -383,11 +401,14 @@ def fie_response(user_input: str) -> str:
     elif user_input == "fie help":
         return help_msg()
 
-    elif any(msg in user_input for msg in ["hi fie", "hey fie"]):
+    elif any(msg in user_input for msg in ["hi fie", "hey fie", "hello fie"]):
         return f"Hey what's up {emote("WAVE")}"
 
     elif any(msg in user_input for msg in ["thank you fie", "thanks fie"]):
         return f"At your service {emote("SALUTE")}"
+
+    elif any(msg in user_input for msg in ["sorry fie", "sry fie", "apologies fie"]):
+        return f"It's okay {emote("SALUTE")}"
 
     elif any(msg in user_input for msg in
            ["good job fie",
@@ -423,18 +444,18 @@ def fie_response(user_input: str) -> str:
     elif "fie bulls" in user_input:
         return "The Bulls are 29-39, but they will show off at the play-in ;)"
 
-    elif "nekotina" in user_input:
-        return "Can you SHUT THE FUCK UP @nekotina"
-
     # Fie ain't taking blame on being mean ever >:)
     elif "fie you're a meanie" in user_input:
         return "No u!"
 
-    elif "I love you fie" in user_input:
-        return "Thanks! I love myself as well!"
+    elif "i love you fie" in user_input:
+        return "Thanks! I love myself as well."
 
     elif "onana" in user_input:
-        return "Get this trash GK out of United ASAP"
+        return "Bye bye LOL"
+
+    elif "bruno lage" in user_input:
+        return "Burro Lage"
 
     elif any(msg in user_input for msg in
              ["aaron",

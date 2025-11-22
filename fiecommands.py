@@ -4,15 +4,19 @@ from datetime import datetime, timedelta, UTC
 from fieemotes import emote
 from fieconstants import CHARACTER_LEVEL_IMAGES, LEVEL_THRESHOLDS, rank_points, WHITELISTED_USERS, VALID_MAP_LINKS
 from pathlib import Path
+from dotenv import load_dotenv
 
 import math
 import statistics
 import json
+import requests
+import os
 
 SCORES_FILE = Path("player_scores.json")
 XP_FILE = Path("xp_data.json")
 CHARACTER_PROFILES_FILE = Path("character_profiles.json")
-
+load_dotenv()
+FOOTBALL_API_KEY = os.getenv('FOOTBALL_API_KEY')
 
 
 # ********************************************************************************* #
@@ -33,7 +37,7 @@ def fie_time(dest_channel_id: int) -> str:
     # there are better approaches to take. And I'm getting a very cool idea but
     # need to cook it more :)
     utc = datetime.now(UTC)
-    azores = utc - timedelta(hours=0)
+    azores = utc - timedelta(hours=1)
 
     if dest_channel_id == 420709830622183434 or dest_channel_id == 420706417721475082:
         costa_rica = utc - timedelta(hours=6)
@@ -46,8 +50,8 @@ def fie_time(dest_channel_id: int) -> str:
                 f"Kuwait (UTC+3): {datetime_to_casual(kuwait)}")
 
     elif dest_channel_id == 455812354790260747 or dest_channel_id == 451108529617764362:
-        portugal = utc + timedelta(hours=1)
-        norway = utc + timedelta(hours=2)
+        portugal = utc + timedelta(hours=0)
+        norway = utc + timedelta(hours=1)
         japan = utc + timedelta(hours=9)
 
         return (f"Azores: {datetime_to_casual(azores)}\n"
@@ -58,7 +62,7 @@ def fie_time(dest_channel_id: int) -> str:
     us_west = utc - timedelta(hours=7)
     us_east = utc - timedelta(hours=4)
     aus_west = utc + timedelta(hours=8)
-    uk = utc + timedelta(hours=1)
+    uk = utc + timedelta(hours=0)
     return (f"US West Coast (UTC-7): {datetime_to_casual(us_west)}\n"
             f"US East Coast (UTC-4): {datetime_to_casual(us_east)}\n"
             f"Azores (UTC): {datetime_to_casual(azores)}\n"
@@ -142,16 +146,16 @@ def fie_days_until(target_day_msg: str) -> str:
         sky_first = datetime(2025, 9, 19)
         until_sky_first = (sky_first - today).days
 
-        kai = datetime(2026, 1, 1)
+        kai = datetime(2026, 1, 15)
         until_kai = (kai - today).days
 
         sky_1st = ({True: "Days until Sky the 1st Remake",
                           False: "Days since Sky the 1st Remake"}) \
                           [sky_first > today]
 
-        kai_msg = ({True: "Days (**at least**) until Beyond the Horizon (Subject to change)",
+        kai_msg = ({True: "Days until Beyond the Horizon",
                           False: "Days since Sky the 1st Remake "}) \
-            [sky_first > today]
+            [kai > today]
 
         easter = datetime(today.year, 4, 20)
         easter_msg = "Days until Easter"
@@ -163,9 +167,9 @@ def fie_days_until(target_day_msg: str) -> str:
               False: (datetime(today.year + 1, 4, 20) - today).days}) \
                 [easter > today]
 
-        days_until_msg = (#f"{christmas_msg}: {until_christmas + 1}\n"
+        days_until_msg = (f"{christmas_msg}: {until_christmas + 1}\n"
                           #f"{easter_msg}: {until_easter + 1}\n"
-                          f"{sky_1st}: {until_sky_first + 1}\n"
+                          #f"{sky_1st}: {until_sky_first + 1}\n"
                           f"{kai_msg}: {until_kai + 1}\n"
                           f"Days until Rean stops being dense: ∞")
     return days_until_msg
@@ -355,6 +359,53 @@ def fie_characters(user_id: str, user_name: str) -> str:
 
     return output
 
+
+def get_team_id(team_name: str, competition: str) -> int | None:
+    """Fetch team ID from competition and name."""
+    url = f"https://api.football-data.org/v4/competitions/{competition}/teams"
+    headers = {"X-Auth-Token": FOOTBALL_API_KEY}
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    for team in data.get("teams", []):
+        if team_name.lower() in team["name"].lower():
+            print(f"Found team: {team['name']} (ID: {team['id']})")
+            return team["id"]
+
+    print("Team not found in this competition.")
+    return None
+
+def fie_football(team_name: str, count: int = 5) -> str:
+
+    if team_name.lower() == "manchester united":
+        team_id = 66
+    elif team_name.lower() == "benfica":
+        team_id = 1903
+    else:
+        return "Please enter a **relevant** team name."
+
+    url = f"https://api.football-data.org/v4/teams/{team_id}/matches?status=SCHEDULED"
+    headers = {"X-Auth-Token": FOOTBALL_API_KEY}
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    print(response.status_code)
+    print(response.url)
+    print(response.json())
+
+    matches = data.get("matches", [])
+    if not matches:
+        return "No upcoming fixtures found."
+
+    lines = ["Upcoming Fixtures:"]
+    for match in matches[:count]:
+        date = match["utcDate"][:10]
+        home = match["homeTeam"]["name"]
+        away = match["awayTeam"]["name"]
+        lines.append(f"{date}: {home} vs {away}")
+    return "\n".join(lines)
 
 # **************************************************** #
 # OTHER COMMAND UTILITIES:                             #

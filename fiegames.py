@@ -1,6 +1,7 @@
 # File: fiegames.py
 import time
 
+from aiohttp.web_routedef import delete
 from discord import Client, Message
 from fieemotes import emote
 
@@ -321,15 +322,20 @@ async def fie_wordle(client_obj : Client, message_obj: Message, answer: str) -> 
             for l in range (5):
                 if known_green_letters[l] != "" and known_green_letters[l] != fie_guessed_letters[l]:
                     print(f"{fie_guess} doesn't match up, because '{known_green_letters[l]}' is a green! Let's try again!")
+                    remove_word(all_words, fie_guess)
                     #await src_channel.send(f"{fie_guess} doesn't match up, because '{known_green_letters[l]}' is a green! Let's try again!")
                     break
 
-                if known_yellow_letters != [] and fie_guessed_letters[l] not in known_yellow_letters:
-                    if l < 4:
-                        continue
-                    else:
-                        print(f"{fie_guess} doesn't match up, because there's a yellow ! Let's try again!")
-                        #await src_channel.send(f"{fie_guess} doesn't match up, because there's a yellow ! Let's try again!")
+                for yellow in known_yellow_letters:
+                    if yellow not in fie_guess:
+                        print(
+                            f"{fie_guess} doesn't match up, because '{yellow}' is a yellow letter but it's missing! Let's try again!")
+                        remove_word(all_words, fie_guess)
+                        break
+                    elif fie_guessed_letters[l] == yellow and yellow in known_yellow_letters:
+                        print(
+                            f"{fie_guess} doesn't match up, because '{yellow}' is a yellow letter and shouldn't be in position {l + 1}! Let's try again!")
+                        remove_word(all_words, fie_guess)
                         break
             else:
                 # All letters match known green positions and yellow
@@ -464,4 +470,10 @@ def get_guessed_letters(guessed_letters: str) -> list[str]:
 def remove_letters(total_list: list[str], incorrect_letter: str) -> list[str]:
     total_list[:] = [w for w in total_list if incorrect_letter not in w]
     return total_list
+
+def remove_word(total_list: list[str], word_to_remove: str) -> list[str]:
+    if word_to_remove in total_list:
+        total_list.remove(word_to_remove)
+    return total_list
+
 
