@@ -12,7 +12,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 
 
 # STEP 1: BOT SETUP
-intents: Intents = Intents.default()
+intents: Intents = Intents.default()    
 intents.message_content = True # NOQA
 client: Client = Client(intents=intents)
 
@@ -22,13 +22,12 @@ client: Client = Client(intents=intents)
 async def on_ready() -> None:
     print(f"{client.user} is now running!")
 
-
-# STEP 3: HANDLING INCOMING MESSAGES
+    
+# STEP 3: HANDLING INCOMING MESSAGES        
 @client.event
 async def on_message(message: Message) -> None:
     if message.author == client.user:
         return
-
     username = str(message.author)
     user_message = str(message.content)
     channel = str(message.channel)

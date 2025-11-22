@@ -15,9 +15,7 @@ from discord import (
 
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, time, UTC
-
-import fietrails
+from datetime import datetime, time, UTC, timedelta
 from fieemotes import emote
 from typing import TypeAlias, Union
 
@@ -25,6 +23,7 @@ import asyncio
 import fiecommands
 import fiegames
 import random
+import re
 
 # Class to store the necessary info to send the daily messages accordingly.
 
@@ -40,6 +39,14 @@ fiegreetings = [
     "Roger!",
     "Ja!",
     "Sylphid at your service!"]
+
+# If fie is mentioned and nothing of the above is
+
+fiereactions = [
+    "Come again?",
+    "Wanna run that by me again?",
+    "If something broke blame <@164047938325184512>"
+]
 
 # List of commands with a brief explanation on how they work.
 
@@ -65,8 +72,11 @@ fie_image_files = [
     "images/fie bye bye.png",
     "images/fie (and laura).png",
     "images/ValentineKuro.png",
-    "images/Rean_Menu_CSI.png",
-    "Rean_Schwarzer_S-Craft_Summer.png"
+    "images/Fie CSI.png",
+    "images/Fie CSII.png",
+    "images/Fie CSIII.png",
+    "images/Fie Reverie.png",
+    "images/Fie Daybreak.png",
 ]
 
 # List of daily messages and their info to send them.
@@ -103,17 +113,16 @@ daily_messages = [
         False,
         time(hour=1, tzinfo=UTC),
         ("<@164047938325184512> <:Fie_Claussell:1304860526936985620> "
-         "Are you still awake you son of a gun? Don't you have uni tomorrow? "
-         f"I will always support you no matter what! {emote("SALUTE")}")
+         "You. Bed. Now. ")
     ),
 
-    DailyMessage(
-        False,
-        time(hour=22, tzinfo=UTC),
-        ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
-         "Noel here! Have you been taking care of yourself? "
-         "I will always support you no matter what!")
-    ),
+    #DailyMessage(
+     #   False,
+      #  time(hour=21, tzinfo=UTC),
+       # ("<@812099925600501882> <:Noel_SD:1303734969797054554> "
+        # "Noel here! Have you been taking care of yourself? "
+         #f"I will always support you no matter what! {emote("SALUTE")}")
+    #),
 ]
 
 # The running gag is about Fie chiming in whenever two people post the same message
@@ -132,6 +141,9 @@ DiscordChannelType: TypeAlias = Union[
 
 def sylphid_greeting() -> str:
     return random.choice(fiegreetings)
+
+def sylphid_reaction() -> str:
+    return random.choice(fiereactions)
 
 def help_msg():
     return f"What a pain... here are the commands you can use:\n{fiehelp}"
@@ -161,6 +173,22 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     if not fie_res == "<empty>":
         await send_text(message_obj, fie_res, is_private)
 
+    # Skip bot messages
+    if message_obj.author.bot:
+        return
+
+    # AUTO XP GAIN
+    user_id = str(message_obj.author.id)
+    xp_result = fiecommands.add_xp(user_id, 10)  # Add 10 XP per message
+
+    if xp_result is None:
+        pass  # Not whitelisted
+
+    # Send level-up messages to a specific channel
+    elif "leveled up" in xp_result[0]:
+        await send_text(message_obj.channel, xp_result[0], is_private=False)
+        await send_file(message_obj, xp_result[1], is_private=False)
+
     # #################################### #
     # Commands triggered by one word only. #
     # #################################### #
@@ -174,12 +202,6 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "kayrennede007":
         await send_file(message_obj, "images/HOT-SHOT_-_Renne_Kuro.png", is_private)
-
-    elif message == "rean":
-        await send_file(message_obj, "images/Rean_Menu_CSI.png", is_private)
-
-    elif message == "rean2":
-        await send_file(message_obj, "images/Rean_Schwarzer_S-Craft_Summer.png", is_private)
 
     # ###################################################### #
     # Commands triggered by a phrase in a message: Utilities #
@@ -202,6 +224,64 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
         fun_fact = fiecommands.fie_what_is(message)
         await send_text(message_obj, fun_fact, is_private)
 
+    elif "fie scores" in message:
+        scores = fiecommands.fie_scores(message)
+        await send_text(message_obj, scores, is_private)
+
+    elif "fie leaderboard" in message:
+        osu_lb = fiecommands.fie_leaderboard()
+        await send_text(message_obj, osu_lb, is_private)
+
+    elif "fie level" in message:
+
+        user_id = str(message_obj.author.id)
+
+        user_name = message_obj.author.display_name
+
+        level_info = fiecommands.fie_level(user_id, user_name)
+
+        if isinstance(level_info, tuple):
+
+            text, image_path = level_info
+
+            await send_text(message_obj, text, is_private)
+
+            await send_file(message_obj, image_path, is_private)
+
+        else:
+
+            await send_text(message_obj, level_info, is_private)
+
+    elif message.startswith("fie switch character"):
+        tokens = message.split()
+        if len(tokens) >= 4:
+            new_char = tokens[3].capitalize()
+            switch_msg = fiecommands.fie_switch_character(user_id, new_char)
+            await send_text(message_obj.channel, switch_msg, is_private)
+
+    elif message == "fie characters":
+        char_list = fiecommands.fie_characters(user_id, message_obj.author.display_name)
+        await send_text(message_obj, char_list, is_private)
+
+
+    elif message_obj.content.lower().startswith("fie football"):
+
+        # Split the command into parts
+
+        parts = message_obj.content.lower().split(maxsplit=2)
+
+        if len(parts) < 3:
+            await send_text(message_obj, "Please include a team name, e.g. `fie football manchester united`.",
+                            is_private)
+            return
+
+        team_name = parts[2]
+
+        matches = fiecommands.fie_football(team_name)
+
+        await send_text(message_obj, matches, is_private)
+
+
     # ################################################## #
     # Commands triggered by a phrase in a message: Games #
     # ################################################## #
@@ -212,8 +292,8 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
     elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
 
-    elif "fie trails" in message:
-        await fietrails.fie_trails(client_obj,message_obj)
+    elif "fie wordle" in message:
+        await fiegames.fie_wordle(client_obj, message_obj, "chirp")
 
     # ################################### #
     # Demi's own command for his schedule #
@@ -221,10 +301,16 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "16th of December - PCO (Forum)",
-            "18th of December - PCO (Test)",
-            "27th of December - SI (TP)",
-            "6th of January - PCO (Project)"
+            "14 de outubro - ES (Projeto 2)",
+            "29 de outubro - LCD (Miniteste 2)",
+            "27 de outubro - ES (Teste)",
+            "4 de novembro - ES (Projeto 3)",
+            "12 de novembro - LCD (Miniteste 3)",
+            "5 de dezembro - LCD (Miniteste 4)",
+            "15 de dezembro - PW (Teste)",
+            "17 de dezembro - ES (Teste)",
+            "22 de  dezembro - LCD (Entre final Projeto)"
+            "9 de janeiro - ES (Projeto 4)",
         ]
 
         user = await client_obj.fetch_user(164047938325184512)
@@ -244,6 +330,8 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     if is_repeated_msg(last_messages):
         await send_text(message_obj, last_messages[1][0], is_private)
+
+
 
 
 # ******************************************************************************** #
@@ -313,11 +401,14 @@ def fie_response(user_input: str) -> str:
     elif user_input == "fie help":
         return help_msg()
 
-    elif any(msg in user_input for msg in ["hi fie", "hey fie"]):
+    elif any(msg in user_input for msg in ["hi fie", "hey fie", "hello fie"]):
         return f"Hey what's up {emote("WAVE")}"
 
     elif any(msg in user_input for msg in ["thank you fie", "thanks fie"]):
         return f"At your service {emote("SALUTE")}"
+
+    elif any(msg in user_input for msg in ["sorry fie", "sry fie", "apologies fie"]):
+        return f"It's okay {emote("SALUTE")}"
 
     elif any(msg in user_input for msg in
            ["good job fie",
@@ -345,14 +436,49 @@ def fie_response(user_input: str) -> str:
     #       actual results of games here.
 
     if "fie gsw" in user_input:
-        return "The Warriors are 9-2!"
+        return "The Warriors are 0-0!"
 
-    if "fie bulls" in user_input:
-        return "The Bulls are 5-7! :("
+    elif "warriors" in user_input:
+        return "WARRIORS!"
+
+    elif "fie bulls" in user_input:
+        return "The Bulls are 29-39, but they will show off at the play-in ;)"
 
     # Fie ain't taking blame on being mean ever >:)
-    if "fie you're a meanie" in user_input:
+    elif "fie you're a meanie" in user_input:
         return "No u!"
+
+    elif "i love you fie" in user_input:
+        return "Thanks! I love myself as well."
+
+    elif "onana" in user_input:
+        return "Bye bye LOL"
+
+    elif "bruno lage" in user_input:
+        return "Burro Lage"
+
+    elif any(msg in user_input for msg in
+             ["aaron",
+              "kastle",
+              "kay",
+              "professor",
+              "scooter",
+              "nana",
+              "sovy",
+              "hase",
+              "hiro",
+              "tartaruga",
+              ]):
+        return "Cool guy!"
+
+    elif "demi" in user_input:
+        return "Never heard of him!"
+
+    elif "fox" in user_input:
+        return "Cool guy! But needs to play trails!"
+
+    #elif "fie" in user_input:
+        #return sylphid_reaction()
 
     return "<empty>"
 
@@ -363,6 +489,7 @@ async def send_daily_message(client: Client, is_private: bool):
     channel1 = client.get_channel(420709830622183434)
     channel2 = client.get_channel(1300997938335580171)
     channel3 = client.get_channel(1299453968363032760)
+
 
     while not client.is_closed():
         now = datetime.now(UTC).time()
@@ -406,3 +533,5 @@ def is_repeated_msg(msg_history: deque) -> bool:
     # first, and the author second. So, to define whether a message is repeated,
     # we have to check for same content but different author.
     return msg1[0] == msg2[0] and msg1[1] != msg2[1]
+
+

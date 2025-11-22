@@ -1,5 +1,7 @@
 # File: fiegames.py
+import time
 
+from aiohttp.web_routedef import delete
 from discord import Client, Message
 from fieemotes import emote
 
@@ -7,6 +9,8 @@ import asyncio
 import csv
 import os
 import random
+
+
 
 rps_choices = ['rock', 'paper', 'scissors']
 
@@ -25,7 +29,9 @@ trails_words = [
 ]
 
 leaderboard_file = 'fie_games_leaderboard.csv'
+leaderboard_talk_file = "fie_talk_leaderboard.csv"
 leaderboard = dict()
+lb_talk = dict()
 
 # ****************************************************************************** #
 # FIE MINI-GAMES:                                                                #
@@ -260,8 +266,11 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
 
         # We received a wrong guess of the full word.
         else:
-            await src_channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
-            lives -= 1
+            if next_guess not in trails_words:
+                await src_channel.send("That word isn't in the database!")
+            else:
+                await src_channel.send("Wrong! Try again <:Fie_SD:1297250356019073065>")
+                lives -= 1
 
     if has_guessed:
         # Add the score of this victory to this player's leaderboard entry.
@@ -270,6 +279,99 @@ async def fie_hangman(client_obj: Client, message_obj: Message):
         await src_channel.send(f"Congratulations! You won this one {emote("GRINV")}")
     else:
         await src_channel.send("Better luck next time!")
+
+async def fie_wordle(client_obj : Client, message_obj: Message, answer: str) -> None:
+    src_channel = message_obj.channel
+    all_words = []
+    answer_letters = []
+    fie_guessed_letters = []
+    known_green_letters = [""] * 5
+    known_yellow_letters = []
+    fie_guess = ""
+    satisfied = False
+
+    with open("english_words.txt", "r") as f:
+        for line in f:
+            word = line.strip()  # Remove newline and spaces
+            if word:  # Skip empty lines
+                all_words.append(word.lower())
+
+    # So we can know every single letter from each word
+    all_words_letters = get_all_words_letters(all_words)
+
+    for word in answer:
+        answer_letters.append(word)
+
+
+    for i in range(6):
+        await src_channel.send(f"Attempt: {i+1}/6")
+        while not satisfied:
+
+            fie_guess = random.choice(all_words)
+            #await src_channel.send(fie_guess)
+
+            # Get the guesses' letters
+            fie_guessed_letters = get_guessed_letters(fie_guess)
+
+            """Somewhere around here we want to check if the guess has the correct letters"""
+
+            # First try will never have known green letters!
+            if i == 0:
+                break
+
+            for l in range (5):
+                if known_green_letters[l] != "" and known_green_letters[l] != fie_guessed_letters[l]:
+                    print(f"{fie_guess} doesn't match up, because '{known_green_letters[l]}' is a green! Let's try again!")
+                    remove_word(all_words, fie_guess)
+                    #await src_channel.send(f"{fie_guess} doesn't match up, because '{known_green_letters[l]}' is a green! Let's try again!")
+                    break
+
+                for yellow in known_yellow_letters:
+                    if yellow not in fie_guess:
+                        print(
+                            f"{fie_guess} doesn't match up, because '{yellow}' is a yellow letter but it's missing! Let's try again!")
+                        remove_word(all_words, fie_guess)
+                        break
+                    elif fie_guessed_letters[l] == yellow and yellow in known_yellow_letters:
+                        print(
+                            f"{fie_guess} doesn't match up, because '{yellow}' is a yellow letter and shouldn't be in position {l + 1}! Let's try again!")
+                        remove_word(all_words, fie_guess)
+                        break
+            else:
+                # All letters match known green positions and yellow
+                satisfied = True
+
+        # Reset
+        satisfied = False
+        #await src_channel.send(fie_guess)
+        result_line = ""
+        for a in range(5):
+            guessed = fie_guessed_letters[a]
+            answer_by_letter = answer_letters[a]
+
+            if guessed == answer_by_letter:
+                #await src_channel.send(f"{guessed} is green!")
+                known_green_letters[a] = guessed
+                result_line += ":green_square:"
+            elif guessed in answer_letters:
+                #await src_channel.send(f"{guessed} is yellow!")
+                known_yellow_letters.append(guessed)
+                result_line += ":yellow_square:"
+            else:
+                remove_letters(all_words, guessed)
+                result_line += ":white_large_square:"
+                #await src_channel.send(f"{guessed} is blank!")
+
+        await src_channel.send(result_line)
+        guessed_letters = []
+
+        if fie_guess.strip().lower() == answer.strip().lower():
+            await src_channel.send("I guessed correctly!")
+            return
+        else:
+            await src_channel.send("Son of a... Let me try again!")
+
+    await src_channel.send("No way! That's BS...")
 
 
 # *************************************************************************** #
@@ -333,3 +435,45 @@ def update_leaderboard(player: str, score: int, game: int) -> None:
         csv_writer = csv.writer(the_file)
         csv_writer.writerow(fields)
         csv_writer.writerows(entries)
+
+
+def update_talk_xp(player: str, xp: int) -> None:
+    global lb_talk
+
+    # Update live dictionary object.
+    lb_talk[player] += xp
+
+    fields = ['Player', 'XP']
+    entries = [[key, value[0]] for key, value in lb_talk.items()]
+
+    # Update leaderboard file.
+    with open(leaderboard_file, mode='w', newline='\n') as the_file:
+        csv_writer = csv.writer(the_file)
+        csv_writer.writerow(fields)
+        csv_writer.writerows(entries)
+
+
+def get_all_words_letters(all_words: list) -> list[str]:
+    all_words_letters = []
+    for word in all_words:
+        all_words_letters.append(word)
+
+    return all_words_letters
+
+def get_guessed_letters(guessed_letters: str) -> list[str]:
+    guessed_list = []
+    for word in guessed_letters:
+        guessed_list.append(word)
+
+    return guessed_list
+
+def remove_letters(total_list: list[str], incorrect_letter: str) -> list[str]:
+    total_list[:] = [w for w in total_list if incorrect_letter not in w]
+    return total_list
+
+def remove_word(total_list: list[str], word_to_remove: str) -> list[str]:
+    if word_to_remove in total_list:
+        total_list.remove(word_to_remove)
+    return total_list
+
+
