@@ -22,6 +22,7 @@ from typing import TypeAlias, Union
 import asyncio
 import fiecommands
 import fiegames
+import fietrails
 import random
 import re
 
@@ -291,6 +292,9 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif "fie hangman" in message:
         await fiegames.fie_hangman(client_obj, message_obj)
+
+    elif "fie trails" in message:
+        await fietrails.fie_trails(client_obj, message_obj)
 
     elif "fie wordle" in message:
         await fiegames.fie_wordle(client_obj, message_obj, "chirp")
