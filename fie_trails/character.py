@@ -28,6 +28,7 @@ class Character:
         # Scaled stats
         self.max_HP = self.base_max_HP + self.growth_HP * self.level
         self.current_HP = self.max_HP
+        self.current_EP = self.base_EP
         self.EP = self.base_EP + self.growth_EP * self.level
         self.CP = self.base_CP
         self.STR = self.base_STR + self.growth_SP_STATS * self.level
@@ -42,8 +43,11 @@ class Character:
 
         # Equipped arts should automatically come from equipped_orbments
         self.equipped_arts: list[Art] = []
+
+        # Not sure if needed anymore
         self._initial_state = self.__dict__.copy()
 
+    # Note: This is merely an example for Rean
     def initialize_rean(self):
         if self.level >= 5:
             self.crafts.append(Craft("Motivate", 0, 10))
@@ -60,8 +64,6 @@ class Character:
             if orbment.art_produced is not None:
                 self.equipped_arts.append(orbment.art_produced)
 
-
-
     def getName(self):
         return self.name
 
@@ -70,9 +72,6 @@ class Character:
 
     def get_current_HP(self):
         return self.current_HP
-
-    def set_max_HP(self, max_HP: int):
-        self.max_HP = max_HP
 
     def set_current_HP(self, current_HP: int):
         self.current_HP = current_HP
@@ -95,14 +94,8 @@ class Character:
     def getSTR(self):
         return self.STR
 
-    def setSTR(self, STR: int):
-        self.STR = STR
-
     def getDEF(self):
         return self.DEF
-
-    def setDEF(self, DEF: int):
-        self.DEF = DEF
 
     def getSPD(self):
         return self.SPD

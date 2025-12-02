@@ -1,7 +1,6 @@
 # File: fietrails.py
 
 from discord import Client, Message
-
 from fie_trails.customization import change_orbments
 from fieemotes import emote
 from fie_trails.combat import fight, Rean
@@ -25,7 +24,6 @@ async def wait_for_digit_reply(client, author, channel, timeout=120.0):
         return None
 
 async def fie_trails(client_obj: Client, message_obj: Message):
-    player_name = message_obj.author.name
     src_channel = message_obj.channel
     while True:
         await src_channel.send("Welcome back! What do you want to do?\n"
@@ -50,7 +48,7 @@ async def fie_trails(client_obj: Client, message_obj: Message):
 
         option = int(menu_choice.content)
         match option:
-            # Choose someone to fight
+            # Choose someone to fight (right now it's always a Scary Dinosaur)
             case 1:
                 await fight(client_obj, message_obj)
             # Change Equipment

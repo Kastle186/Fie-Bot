@@ -86,7 +86,7 @@ async def change_orbments(client_obj: Client, message_obj: Message, character: C
         
 async def change_equipment(client_obj: Client, message_obj: Message, character: Character) -> None:
     src_channel = message_obj.channel
-
+    # WIP
 
 
 
