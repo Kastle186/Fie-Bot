@@ -15,16 +15,16 @@ from discord import (
 
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, time, UTC, timedelta
+from datetime import datetime, time, UTC
 from fieemotes import emote
 from typing import TypeAlias, Union
 
 import asyncio
 import fiecommands
 import fiegames
-import fietrails
+from fie_trails import fietrails
 import random
-import re
+
 
 # Class to store the necessary info to send the daily messages accordingly.
 
@@ -305,15 +305,10 @@ async def handle_message(client_obj: Client, message_obj: Message) -> None:
 
     elif message == "fie schedule":
         tasks = [
-            "14 de outubro - ES (Projeto 2)",
-            "29 de outubro - LCD (Miniteste 2)",
-            "27 de outubro - ES (Teste)",
-            "4 de novembro - ES (Projeto 3)",
-            "12 de novembro - LCD (Miniteste 3)",
             "5 de dezembro - LCD (Miniteste 4)",
             "15 de dezembro - PW (Teste)",
             "17 de dezembro - ES (Teste)",
-            "22 de  dezembro - LCD (Entre final Projeto)"
+            "22 de  dezembro - LCD (Entrega final Projeto)"
             "9 de janeiro - ES (Projeto 4)",
         ]
 

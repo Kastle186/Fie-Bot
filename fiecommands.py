@@ -382,6 +382,14 @@ def fie_football(team_name: str, count: int = 5) -> str:
         team_id = 66
     elif team_name.lower() == "benfica":
         team_id = 1903
+    elif team_name.lower() == "arsenal":
+        team_id = 57
+    elif team_name.lower() == "bayern":
+        team_id = 5
+    elif team_name.lower() == "vasco":
+        team_id = 1780
+
+
     else:
         return "Please enter a **relevant** team name."
 

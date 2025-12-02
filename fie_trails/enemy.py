@@ -1,12 +1,13 @@
 class Enemy:
-    def __init__(self, name: str, HP: int, EP: int, CP: int,
+    def __init__(self, name: str, max_HP: int, current_HP: int, EP: int, CP: int,
                  STR: int, DEF: int, SPD: int, ATS: int,
                  ADF: int, level: int, xp: int, crafts=None):
 
         if crafts is None:
             crafts = []
         self.name = name
-        self.HP = HP
+        self.max_HP = max_HP
+        self.current_HP = current_HP
         self.EP = EP
         self.CP = CP
         self.STR = STR
@@ -21,17 +22,25 @@ class Enemy:
 
     def get_name(self):
         return self.name
-    def getHP(self):
-        return self.HP
 
-    def setHP(self, HP: int):
-        self.HP = HP
+    def get_max_HP(self):
+        return self.max_HP
+
+    def get_current_HP(self):
+        return self.current_HP
+
+    def set_max_HP(self, max_HP: int):
+        self.max_HP = max_HP
+
+    def set_current_HP(self, current_HP: int):
+        self.current_HP = current_HP
 
     def getEP(self):
         return self.EP
 
     def setEP(self, EP: int):
         self.EP = EP
+
     def getCP(self):
         return self.CP
 
@@ -54,6 +63,7 @@ class Enemy:
 
     def get_specific_craft(self, index: int):
         return self.crafts[index]
+
     def get_crafts(self):
         return self.crafts
 
@@ -62,5 +72,4 @@ class Enemy:
 
     # IMPORTANT: This only works once. A new way has to be found for this
     def reset(self):
-        # Restore attributes from the initial state
-        self.__dict__ = self._initial_state.copy()
+        self.set_current_HP(self.max_HP)
