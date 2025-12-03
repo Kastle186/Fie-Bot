@@ -67,7 +67,7 @@ class Character:
     # Please please please don't do this. Use dataclasses instead. And also in general,
     # remember that Python never ever uses camelCase.
 
-    def getName(self):
+    def get_name(self):
         return self.name
 
     def get_max_HP(self):
@@ -79,7 +79,7 @@ class Character:
     def set_current_HP(self, current_HP: int):
         self.current_HP = current_HP
 
-    def getEP(self):
+    def get_ep(self):
         return self.EP
 
     def setEP(self, EP: int):
@@ -143,7 +143,7 @@ class Character:
         return str(self.crafts)
 
     def status(self):
-        return (f"Name: {self.getName()}\n"
+        return (f"Name: {self.get_name()}\n"
                 f"Level: {self.getLVL()}\n"
                 f"HP:  {self.get_max_HP()}       EXP: {self.getXP()}\n"
                 f"STR: {self.getSTR()}      ATS: {self.getATS()}\n"
@@ -162,6 +162,7 @@ class Character:
         self.ATS = self.base_ATS + self.growth_SP_STATS * self.level
         self.ADF = self.base_ADF + self.growth_SP_STATS * self.level
         self.current_HP = min(self.current_HP, self.max_HP)
+
 
     def reset(self):
         # Restore attributes from the initial state

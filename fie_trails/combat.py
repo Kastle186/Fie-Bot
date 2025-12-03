@@ -93,7 +93,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             return
 
         art_chosen = int(art_choice.content)
-        character.setEP(character.getEP() - character.get_equipped_arts()[art_chosen - 1].cost)
+        character.setEP(character.get_ep() - character.get_equipped_arts()[art_chosen - 1].cost)
 
         return character.get_equipped_arts()[art_chosen - 1].damage
 
