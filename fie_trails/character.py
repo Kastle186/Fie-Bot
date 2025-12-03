@@ -1,169 +1,132 @@
 from fie_trails.craft import Craft
 from fie_trails.art import Art
 from fie_trails.orbment import Orbment
+from dataclasses import dataclass, field
 
 
+@dataclass
 class Character:
-    def __init__(self, name: str, current_xp: int):
-        self.name = name
-        self.current_xp = current_xp
-        self.level = self.calculate_level()
+        name: str
+        current_xp: int
 
         # Base stats
-        self.base_max_HP = 500
-        self.base_EP = 100
-        self.base_CP = 0
-        self.base_STR = 20
-        self.base_DEF = 15
-        self.base_SPD = 10
-        self.base_ATS = 12
-        self.base_ADF = 10
+        base_max_hp: int = 500
+        base_ep: int = 100
+        base_cp: int = 0
+        base_str: int = 20
+        base_def: int = 15
+        base_spd: int = 10
+        base_ats: int = 12
+        base_adf: int = 10
 
         # Growth per level
-        self.growth_HP = 40
-        self.growth_EP = 5
-        self.growth_SP_STATS = 2  # STR, DEF, ATS and ADF
-        self.growth_SPD = 1
+        growth_hp: int = 40
+        growth_ep: int = 5
+        growth_sp_stats: int = 2  # STR, DEF, ATS and ADF
+        growth_spd: int = 1
 
         # Scaled stats
-        self.max_HP = self.base_max_HP + self.growth_HP * self.level
-        self.current_HP = self.max_HP
-        self.current_EP = self.base_EP
-        self.EP = self.base_EP + self.growth_EP * self.level
-        self.CP = self.base_CP
-        self.STR = self.base_STR + self.growth_SP_STATS * self.level
-        self.DEF = self.base_DEF + self.growth_SP_STATS * self.level
-        self.SPD = self.base_SPD + self.growth_SPD * self.level
-        self.ATS = self.base_ATS + self.growth_SP_STATS * self.level
-        self.ADF = self.base_ADF + self.growth_SP_STATS * self.level
+        # Computed on init
+        level: int = field(init=False)
+        max_HP: int = field(init=False)
+        current_HP: int = field(init=False)
+        ep: int = field(init=False)
+        current_ep: int = field(init=False)
+        cp: int = field(init=False)
+        str: int = field(init=False)
+        dfs: int = field(init=False)
+        spd: int = field(init=False)
+        ats: int = field(init=False)
+        adf: int = field(init=False)
 
-        self.crafts = [Craft("Autumn Leaf Cutter", self.STR * 2, 20)]
-        self.available_orbments: list[Orbment] = [Orbment("Attack 1", 0, "fire", Art("Fire Bolt", self.STR * 2, 20, "fire"))]
-        self.equipped_orbments: list[Orbment] = [Orbment("Attack 2", 0, "fire", Art("Fire Bolt", self.STR * 2, 20, "fire"))]
+        crafts: list["Craft"] = field(init=False, default_factory=list)
+        available_orbments: list["Orbment"] = field(init=False, default_factory=list)
+        equipped_orbments: list["Orbment"] = field(init=False, default_factory=list)
+        equipped_arts: list["Art"] = field(init=False, default_factory=list)
 
-        # Equipped arts should automatically come from equipped_orbments
-        self.equipped_arts: list[Art] = []
+        # Note: This is merely an example for Rean
+        def initialize_rean(self):
+            if self.level >= 5:
+                self.crafts.append(Craft("Motivate", 0, 10))
+            if self.level >= 15:
+                self.crafts.append(Craft("Arc Slash", self.str * 2, 30))
+            if self.level >= 35:
+                self.crafts.append(Craft("Gale", self.str * 3, 35))
+            if self.level >= 55:
+                self.crafts.append(Craft("Flame Impact", self.str * 4, 35))
+            if self.level >= 10:
+                self.crafts.append(Craft("S-Craft - Flame Slash", self.str * 10, 200))
 
-        # Not sure if needed anymore
-        self._initial_state = self.__dict__.copy()
+            for orbment in self.equipped_orbments:
+                if orbment.art_produced is not None:
+                    self.equipped_arts.append(orbment.art_produced)
 
-    # Note: This is merely an example for Rean
-    def initialize_rean(self):
-        if self.level >= 5:
-            self.crafts.append(Craft("Motivate", 0, 10))
-        if self.level >= 15:
-            self.crafts.append(Craft("Arc Slash", self.STR * 2, 30))
-        if self.level >= 35:
-            self.crafts.append(Craft("Gale", self.STR * 3, 35))
-        if self.level >= 55:
-            self.crafts.append(Craft("Flame Impact", self.STR * 4, 35))
-        if self.level >= 10:
-            self.crafts.append(Craft("S-Craft - Flame Slash", self.STR * 10, 200))
+        def __post_init__(self):
+            self.level = self.calculate_level()
 
-        for orbment in self.equipped_orbments:
-            if orbment.art_produced is not None:
-                self.equipped_arts.append(orbment.art_produced)
+            # Scaled stats
+            self.max_HP = self.base_max_hp + self.growth_hp * self.level
+            self.current_HP = self.max_HP
+            self.current_ep = self.base_ep
+            self.ep = self.base_ep + self.growth_ep * self.level
+            self.cp = self.base_cp
+            self.str = self.base_str + self.growth_sp_stats * self.level
+            self.dfs = self.base_def + self.growth_sp_stats * self.level
+            self.spd = self.base_spd + self.growth_spd * self.level
+            self.ats = self.base_ats + self.growth_sp_stats * self.level
+            self.adf = self.base_adf + self.growth_sp_stats * self.level
 
-    # Please please please don't do this. Use dataclasses instead. And also in general,
-    # remember that Python never ever uses camelCase.
+            # Initialize crafts/orbments/arts
+            self.crafts = [Craft("Autumn Leaf Cutter", self.str * 2, 20)]
+            fire_art = Art("Fire Bolt", self.str * 2, 20, "fire")
 
-    def get_name(self):
-        return self.name
+            self.available_orbments = [
+                Orbment("Attack 1", 0, "fire", fire_art)
+            ]
+            self.equipped_orbments = [
+                Orbment("Attack 2", 0, "fire", fire_art)
+            ]
 
-    def get_max_HP(self):
-        return self.max_HP
+            # Pull arts from equipped orbments
+            self.equipped_arts = []
 
-    def get_current_HP(self):
-        return self.current_HP
+        # Please please please don't do this. Use dataclasses instead. And also in general,
+        # remember that Python never ever uses camelCase.
 
-    def set_current_HP(self, current_HP: int):
-        self.current_HP = current_HP
+        def set_xp(self, xp: int):
+            self.current_xp = xp
+            old_level = self.level
+            self.level = self.calculate_level()
 
-    def get_ep(self):
-        return self.EP
+            # If level changed, update stats
+            if self.level != old_level:
+                self.refresh_stats()
 
-    def setEP(self, EP: int):
-        self.EP = EP
+        def __str__(self):
+            return str(self.crafts)
 
-    def getCP(self):
-        return self.CP
+        def status(self):
+            return (f"Name: {self.name}\n"
+                    f"Level: {self.level}\n"
+                    f"HP:  {self.max_HP}       EXP: {self.current_xp}\n"
+                    f"STR: {self.str}      ATS: {self.ats}\n"
+                    f"DEF: {self.dfs}      ADF: {self.adf}\n"
+                    f"SPD: {self.spd}\n")
 
-    def setCP(self, CP: int):
-        self.CP = CP
+        def calculate_level(self):
+            return int((self.current_xp ** 0.5) / 10) + 1
 
-    def get_crafts(self):
-        return self.crafts
-
-    def getSTR(self):
-        return self.STR
-
-    def getDEF(self):
-        return self.DEF
-
-    def getSPD(self):
-        return self.SPD
-
-    def getATS(self):
-        return self.ATS
-
-    def getADF(self):
-        return self.ADF
-
-    def getXP(self):
-        return self.current_xp
-
-    def setXP(self, XP: int):
-        self.current_xp = XP
-        old_level = self.level
-        self.level = self.calculate_level()
-
-        # If level changed, update stats
-        if self.level != old_level:
-            self.refresh_stats()
-
-    def getLVL(self):
-        return self.level
-
-    def get_available_orbments(self):
-        return self.available_orbments
-
-    def get_equipped_orbments(self):
-        return self.equipped_orbments
-
-    def get_equipped_arts(self):
-        return self.equipped_arts
-
-    def set_available_orbments(self, position: int, orbment: Orbment):
-        self.available_orbments[position] = orbment
-
-    def set_equipped_orbments(self, position: int, orbment: Orbment):
-        self.equipped_orbments[position] = orbment
-
-    def __str__(self):
-        return str(self.crafts)
-
-    def status(self):
-        return (f"Name: {self.get_name()}\n"
-                f"Level: {self.getLVL()}\n"
-                f"HP:  {self.get_max_HP()}       EXP: {self.getXP()}\n"
-                f"STR: {self.getSTR()}      ATS: {self.getATS()}\n"
-                f"DEF: {self.getDEF()}      ADF: {self.getADF()}\n"
-                f"SPD: {self.getSPD()}\n")
-
-    def calculate_level(self):
-        return int((self.current_xp ** 0.5) / 10) + 1
-
-    def refresh_stats(self):
-        self.max_HP = self.base_max_HP + self.growth_HP * self.level
-        self.EP = self.base_EP + self.growth_EP * self.level
-        self.STR = self.base_STR + self.growth_SP_STATS * self.level
-        self.DEF = self.base_DEF + self.growth_SP_STATS * self.level
-        self.SPD = self.base_SPD + self.growth_SPD * self.level
-        self.ATS = self.base_ATS + self.growth_SP_STATS * self.level
-        self.ADF = self.base_ADF + self.growth_SP_STATS * self.level
-        self.current_HP = min(self.current_HP, self.max_HP)
+        def refresh_stats(self):
+            self.max_HP = self.base_max_hp + self.growth_hp * self.level
+            self.ep = self.base_ep + self.growth_ep * self.level
+            self.str = self.base_str + self.growth_sp_stats * self.level
+            self.dfs = self.base_def + self.growth_sp_stats * self.level
+            self.spd = self.base_spd + self.growth_spd * self.level
+            self.ats = self.base_ats + self.growth_sp_stats * self.level
+            self.adf = self.base_adf + self.growth_sp_stats * self.level
+            self.current_HP = min(self.current_HP, self.max_HP)
 
 
-    def reset(self):
-        # Restore attributes from the initial state
-        self.set_current_HP(self.max_HP)
+        def reset(self):
+            # Restore attributes from the initial state
+            self.current_HP = self.max_HP

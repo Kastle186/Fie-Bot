@@ -24,8 +24,8 @@ async def change_orbments(client_obj: Client, message_obj: Message, character: C
     orbment_list = ""
 
     # CHARACTER'S EQUIPPED ORBMENTS
-    for i in range(0, len(character.get_equipped_orbments())):
-        orbment_list += (f"{i + 1} - " + str(character.get_equipped_orbments()[i]) + "\n")
+    for i in range(0, len(character.equipped_orbments)):
+        orbment_list += (f"{i + 1} - " + str(character.equipped_orbments[i]) + "\n")
 
     if orbment_list == "":
         await src_channel.send("No current equipped orbments found.\n")
@@ -54,8 +54,8 @@ async def change_orbments(client_obj: Client, message_obj: Message, character: C
         available_orbment_list = " "
 
         # CHARACTER'S AVAILABLE ORBMENTS
-        for i in range(0, len(character.get_available_orbments())):
-            available_orbment_list += (f"{i + 1} - " + str(character.get_available_orbments()[i]) + "\n")
+        for i in range(0, len(character.available_orbments)):
+            available_orbment_list += (f"{i + 1} - " + str(character.available_orbments[i]) + "\n")
 
         if available_orbment_list == " ":
             await src_channel.send("No current available orbments found.\n")
@@ -76,12 +76,12 @@ async def change_orbments(client_obj: Client, message_obj: Message, character: C
 
         else:
             # We will set a new orbment here
-            await src_channel.send(f"Replaced orbment: {character.get_equipped_orbments()[orbment_chosen - 1]} for "
-                                   f"{character.get_available_orbments()[available_chosen - 1]}" )
+            await src_channel.send(f"Replaced orbment: {character.equipped_orbments[orbment_chosen - 1]} for "
+                                   f"{character.available_orbments[available_chosen - 1]}" )
 
-            trader = character.get_available_orbments()[available_chosen - 1]
-            character.set_available_orbments(available_chosen - 1, character.get_equipped_orbments()[orbment_chosen - 1])
-            character.set_equipped_orbments(orbment_chosen - 1, trader)
+            trader = character.available_orbments[available_chosen - 1]
+            character.available_orbments[available_chosen - 1] = character.equipped_orbments[orbment_chosen - 1]
+            character.equipped_orbments[orbment_chosen - 1] = trader
 
         
 async def change_equipment(client_obj: Client, message_obj: Message, character: Character) -> None:

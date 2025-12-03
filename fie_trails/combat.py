@@ -48,7 +48,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
     async def choose_craft(character: Character):
         craft_list = " "
         for i in range(0, len(character.crafts)):
-            craft_list += (f"{i+1} - " + str(character.get_crafts()[i]) + "\n")
+            craft_list += (f"{i+1} - " + str(character.crafts[i]) + "\n")
         await src_channel.send(craft_list)
 
         # USE REUSABLE FUNCTION
@@ -63,7 +63,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             return
 
         craft_chosen = int(craft_choice.content)
-        character.setCP(character.getCP() - character.crafts[craft_chosen-1].cost)
+        character.cp -= character.crafts[craft_chosen - 1].cost
         if character.crafts[craft_chosen-1].name == "S-Craft - Flame Slash":
             await src_channel.send("Aoki honoo yo...\n")
             sleep(1)
@@ -77,8 +77,8 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
 
     async def choose_art(character: Character):
         art_list = " "
-        for i in range(0, len(character.get_equipped_arts())):
-            art_list += (f"{i + 1} - " + str(character.get_equipped_arts()[i]) + "\n")
+        for i in range(0, len(character.equipped_arts)):
+            art_list += (f"{i + 1} - " + str(character.equipped_arts[i]) + "\n")
 
         await src_channel.send(art_list)
 
@@ -93,9 +93,9 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             return
 
         art_chosen = int(art_choice.content)
-        character.setEP(character.get_ep() - character.get_equipped_arts()[art_chosen - 1].cost)
+        character.ep -= character.equipped_arts[art_chosen - 1].cost
 
-        return character.get_equipped_arts()[art_chosen - 1].damage
+        return character.equipped_arts[art_chosen - 1].damage
 
     async def character_turn(character: Character):
         await src_channel.send("Choose an action\n"
@@ -118,7 +118,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
         option = int(combat_choice.content)
         match option:
             case 1:
-                return character.STR
+                return character.str
             case 2:
                 return await choose_craft(character)
             case 3:
@@ -153,14 +153,14 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             print(enemy.get_current_HP())
             await src_channel.send("You won!\n")
             reset_everyone(enemy, character)
-            character.setXP(character.getXP() + enemy.getXP())
+            character.set_xp(character.current_xp + enemy.getXP())
             await src_channel.send(f"XP gained: {enemy.getXP()}")
             return True
         return False
 
     async def check_defeat(character: Character, enemy: Enemy):
-        if character.get_current_HP() <= 0:
-            print(character.get_current_HP())
+        if character.current_HP <= 0:
+            print(character.current_HP)
             await src_channel.send("You lost!\n")
             reset_everyone(enemy, character)
             return True
@@ -178,7 +178,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
             character.initialize_rean()
             initialized = True
         while character.current_HP > 0 and enemy.current_HP > 0:
-            if character.SPD >= enemy.SPD:
+            if character.spd >= enemy.SPD:
                 difference = dif(await character_turn(character) - enemy.getDEF())
                 enemy.set_current_HP(enemy.get_current_HP() - difference)
                 await src_channel.send("Enemy HP: " + str(enemy.get_current_HP()) + f" (-{difference})\n")
@@ -187,18 +187,18 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                 if await check_victory(enemy, character):
                     return
 
-                difference = dif(await enemy_turn(enemy) - character.getDEF())
-                character.set_current_HP(character.get_current_HP() - difference)
-                await src_channel.send("Character HP: " + str(character.get_current_HP()) + f" (-{difference})\n")
+                difference = dif(await enemy_turn(enemy) - character.dfs)
+                character.current_HP -= difference
+                await src_channel.send("Character HP: " + str(character.current_HP) + f" (-{difference})\n")
                 sleep(1)
 
                 if await check_defeat(character, enemy):
                     return
 
             else:
-                difference = dif(await enemy_turn(enemy) - character.getDEF())
-                character.set_current_HP(character.get_current_HP() - difference)
-                await src_channel.send("Character HP: " + str(character.get_current_HP()) + f" (-{difference})\n")
+                difference = dif(await enemy_turn(enemy) - character.dfs)
+                character.current_HP -= difference
+                await src_channel.send("Character HP: " + str(character.current_HP) + f" (-{difference})\n")
                 sleep(1)
 
                 if await check_defeat(character, enemy):
