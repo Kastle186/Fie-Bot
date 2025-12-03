@@ -64,6 +64,9 @@ class Character:
             if orbment.art_produced is not None:
                 self.equipped_arts.append(orbment.art_produced)
 
+    # Please please please don't do this. Use dataclasses instead. And also in general,
+    # remember that Python never ever uses camelCase.
+
     def getName(self):
         return self.name
 
@@ -163,6 +166,3 @@ class Character:
     def reset(self):
         # Restore attributes from the initial state
         self.set_current_HP(self.max_HP)
-
-
-

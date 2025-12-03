@@ -12,7 +12,18 @@ from discord import Client, Message
 # But we need to fix this properly lol
 # JSON
 
+# Looking at your data, I can think of two options:
+# - One JSON: Everything in one file.
+# - One CSV and one JSON: CSV for stats, JSON for hierarchical info, like Crafts.
+
+# I'll let you fix this entire file like you said in your comments before going
+# for feedback lol.
+
 Rean = Character("Rean Schwarzer", 0 )
+
+# As a general note, try to keep your lines between 80-100 characters. It's the Python
+# standard convention, and it is humanly easier to read "vertically" than "horizontally".
+
 Dino = Enemy("Scary Dinosaur", 400, 400,30, 30, 20, 20, 20, 1, 50, 1, 500, [Craft("Bite", 30 * 2, 20), Craft("Decimate", 30 * 3, 40)])
 initialized = False
 
@@ -205,4 +216,3 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
         await check_defeat(character, enemy)
 
     await start_fight(Rean, Dino)
-

@@ -8,6 +8,9 @@ from fie_trails.character import Character
 import asyncio
 import fieutils
 
+# It might be a good idea to consider to abstract all the Discord stuff into its own
+# interface that the game would then leverage. Makes it easier to maintain and less prone
+# to bugs.
 
 async def wait_for_digit_reply(client, author, channel, timeout=120.0):
     """Waits for a numeric message from a specific user in a specific channel."""
@@ -67,5 +70,3 @@ async def fie_trails(client_obj: Client, message_obj: Message):
                 return
             case _:
                 return await src_channel.send("Are you serious? All you have to do is choose between 1 and 4...\n")
-
-

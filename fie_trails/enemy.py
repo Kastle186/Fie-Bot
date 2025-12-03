@@ -20,6 +20,8 @@ class Enemy:
         self.crafts = crafts
         self._initial_state = self.__dict__.copy()
 
+    # Same as in the Character class. Please please please use dataclasses instead.
+
     def get_name(self):
         return self.name
 
