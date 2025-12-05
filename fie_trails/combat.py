@@ -19,7 +19,7 @@ from discord import Client, Message
 # I'll let you fix this entire file like you said in your comments before going
 # for feedback lol.
 
-Rean = Character("Rean Schwarzer", 0 )
+Rean = Character("Rean Schwarzer", 10000 )
 
 # As a general note, try to keep your lines between 80-100 characters. It's the Python
 # standard convention, and it is humanly easier to read "vertically" than "horizontally".
@@ -46,10 +46,11 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
     src_channel = message_obj.channel
 
     async def choose_craft(character: Character):
-        craft_list = " "
-        for i in range(0, len(character.crafts)):
-            craft_list += (f"{i+1} - " + str(character.crafts[i]) + "\n")
-        await src_channel.send(craft_list)
+        craft_list = []
+        for i, craft in enumerate(character.crafts):
+            craft_list.append(f"{i+1} - {character.crafts[i]}")
+        if character.s_crafts: craft_list.append(character.s_crafts)
+        await src_channel.send("\n".join(craft_list))
 
         # USE REUSABLE FUNCTION
         craft_choice = await wait_for_digit_reply(
@@ -77,7 +78,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
 
     async def choose_art(character: Character):
         art_list = " "
-        for i in range(0, len(character.equipped_arts)):
+        for i, art in enumerate(character.equipped_arts):
             art_list += (f"{i + 1} - " + str(character.equipped_arts[i]) + "\n")
 
         await src_channel.send(art_list)
@@ -159,8 +160,8 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
         return False
 
     async def check_defeat(character: Character, enemy: Enemy):
-        if character.current_HP <= 0:
-            print(character.current_HP)
+        if character.current_hp <= 0:
+            print(character.current_hp)
             await src_channel.send("You lost!\n")
             reset_everyone(enemy, character)
             return True
@@ -177,7 +178,7 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
         if not initialized:
             character.initialize_rean()
             initialized = True
-        while character.current_HP > 0 and enemy.current_HP > 0:
+        while character.current_hp > 0 and enemy.current_HP > 0:
             if character.spd >= enemy.SPD:
                 difference = dif(await character_turn(character) - enemy.getDEF())
                 enemy.set_current_HP(enemy.get_current_HP() - difference)
@@ -188,8 +189,8 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
                     return
 
                 difference = dif(await enemy_turn(enemy) - character.dfs)
-                character.current_HP -= difference
-                await src_channel.send("Character HP: " + str(character.current_HP) + f" (-{difference})\n")
+                character.current_hp -= difference
+                await src_channel.send("Character HP: " + str(character.current_hp) + f" (-{difference})\n")
                 sleep(1)
 
                 if await check_defeat(character, enemy):
@@ -197,8 +198,8 @@ async def fight(client_obj: Client, message_obj: Message) -> None:
 
             else:
                 difference = dif(await enemy_turn(enemy) - character.dfs)
-                character.current_HP -= difference
-                await src_channel.send("Character HP: " + str(character.current_HP) + f" (-{difference})\n")
+                character.current_hp -= difference
+                await src_channel.send("Character HP: " + str(character.current_hp) + f" (-{difference})\n")
                 sleep(1)
 
                 if await check_defeat(character, enemy):

@@ -2,6 +2,7 @@ from fie_trails.craft import Craft
 from fie_trails.art import Art
 from fie_trails.orbment import Orbment
 from dataclasses import dataclass, field
+from fie_trails.scraft import SCraft
 
 
 @dataclass
@@ -28,8 +29,8 @@ class Character:
         # Scaled stats
         # Computed on init
         level: int = field(init=False)
-        max_HP: int = field(init=False)
-        current_HP: int = field(init=False)
+        max_hp: int = field(init=False)
+        current_hp: int = field(init=False)
         ep: int = field(init=False)
         current_ep: int = field(init=False)
         cp: int = field(init=False)
@@ -40,6 +41,7 @@ class Character:
         adf: int = field(init=False)
 
         crafts: list["Craft"] = field(init=False, default_factory=list)
+        s_crafts: list["SCraft"] = field(init=False, default_factory=list)
         available_orbments: list["Orbment"] = field(init=False, default_factory=list)
         equipped_orbments: list["Orbment"] = field(init=False, default_factory=list)
         equipped_arts: list["Art"] = field(init=False, default_factory=list)
@@ -55,7 +57,7 @@ class Character:
             if self.level >= 55:
                 self.crafts.append(Craft("Flame Impact", self.str * 4, 35))
             if self.level >= 10:
-                self.crafts.append(Craft("S-Craft - Flame Slash", self.str * 10, 200))
+                self.s_crafts.append(SCraft("S-Craft  Flame Slash", self.str * 10))
 
             for orbment in self.equipped_orbments:
                 if orbment.art_produced is not None:
@@ -65,16 +67,10 @@ class Character:
             self.level = self.calculate_level()
 
             # Scaled stats
-            self.max_HP = self.base_max_hp + self.growth_hp * self.level
-            self.current_HP = self.max_HP
+            self.refresh_stats()
+            self.current_hp = self.max_hp
             self.current_ep = self.base_ep
-            self.ep = self.base_ep + self.growth_ep * self.level
             self.cp = self.base_cp
-            self.str = self.base_str + self.growth_sp_stats * self.level
-            self.dfs = self.base_def + self.growth_sp_stats * self.level
-            self.spd = self.base_spd + self.growth_spd * self.level
-            self.ats = self.base_ats + self.growth_sp_stats * self.level
-            self.adf = self.base_adf + self.growth_sp_stats * self.level
 
             # Initialize crafts/orbments/arts
             self.crafts = [Craft("Autumn Leaf Cutter", self.str * 2, 20)]
@@ -108,7 +104,7 @@ class Character:
         def status(self):
             return (f"Name: {self.name}\n"
                     f"Level: {self.level}\n"
-                    f"HP:  {self.max_HP}       EXP: {self.current_xp}\n"
+                    f"HP:  {self.max_hp}       EXP: {self.current_xp}\n"
                     f"STR: {self.str}      ATS: {self.ats}\n"
                     f"DEF: {self.dfs}      ADF: {self.adf}\n"
                     f"SPD: {self.spd}\n")
@@ -117,16 +113,16 @@ class Character:
             return int((self.current_xp ** 0.5) / 10) + 1
 
         def refresh_stats(self):
-            self.max_HP = self.base_max_hp + self.growth_hp * self.level
+            self.max_hp = self.base_max_hp + self.growth_hp * self.level
             self.ep = self.base_ep + self.growth_ep * self.level
             self.str = self.base_str + self.growth_sp_stats * self.level
             self.dfs = self.base_def + self.growth_sp_stats * self.level
             self.spd = self.base_spd + self.growth_spd * self.level
             self.ats = self.base_ats + self.growth_sp_stats * self.level
             self.adf = self.base_adf + self.growth_sp_stats * self.level
-            self.current_HP = min(self.current_HP, self.max_HP)
+            #self.current_hp = min(self.current_hp, self.max_hp)
 
 
         def reset(self):
             # Restore attributes from the initial state
-            self.current_HP = self.max_HP
+            self.current_hp = self.max_hp
